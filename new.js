@@ -113,8 +113,8 @@ box.style.cssText = `
           </thead>
           <tbody id="mini-excel-body">
             <tr>
-              <td style="border:1px solid #ccc;padding:4px;"><input value="Thanh toán"></td>
-              <td style="border:1px solid #ccc;padding:4px;"><input value="Kiểm tra giao dịch"></td>
+              <td style="border:1px solid #ccc;padding:4px;"><input value="Others"></td>
+              <td style="border:1px solid #ccc;padding:4px;"><input value="No support"></td>
               <td style="border:1px solid #ccc;padding:4px;"><input value="None"></td>
               <td style="border:1px solid #ccc;text-align:center;"><button class="doAction" style="padding:4px 8px;border-radius:4px;border:1px solid #4285f4;background:#4285f4;color:#fff;cursor:pointer;">▶</button></td>
               <td style="border:1px solid #ccc;text-align:center;"><button class="deleteRow" style="padding:4px 8px;border-radius:4px;border:1px solid #d33;background:#d33;color:#fff;cursor:pointer;">🗑️</button></td>
