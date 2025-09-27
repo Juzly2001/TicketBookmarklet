@@ -157,11 +157,12 @@ function renderRows(){
         tr.appendChild(td1); 
 
         const td2=document.createElement("td"); 
-        td2.innerText=String(r.text).replace(/\n+/g," "); 
+        td2.textContent = String(r.text).split("\n")[0];
         td2.style.padding="6px 8px"; 
         td2.style.whiteSpace="nowrap"; 
         td2.style.overflow="hidden"; 
-        td2.style.textOverflow="ellipsis"; 
+        td2.style.textOverflow="ellipsis";
+        td2.style.maxHeight = "20px";          // đảm bảo không vượt ô 
         td2.style.borderBottom="1px solid #f1f1f1"; 
         td2.onmouseenter=e=>{ 
             tooltip.innerHTML=""; 
