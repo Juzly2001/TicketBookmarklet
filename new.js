@@ -66,7 +66,7 @@ box.style.cssText = `
     min-width:560px;
     min-height:200px;
     width:560px;     /* bắt buộc width */
-    height:340px;    /* bắt buộc height */
+    height:460px;    /* bắt buộc height */
     box-sizing:border-box;  /* ✅ quan trọng */
     transition:all .2s ease;
     resize:both;
