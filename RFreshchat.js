@@ -43,7 +43,7 @@ container.style.width="420px";
 container.style.overflow="hidden"; 
 
 const toggleBtn=document.createElement("button"); 
-toggleBtn.innerText="Ẩn/Hiện bảng (Ctrl + Space)"; 
+toggleBtn.innerText="Ẩn/Hiện (Ctrl + Space)"; 
 toggleBtn.style.width="100%"; 
 toggleBtn.style.padding="8px"; 
 toggleBtn.style.cursor="pointer"; 
@@ -335,10 +335,6 @@ document.addEventListener("mouseup", () => {
 
 let isVisible = true;
 
-toggleBtn.onclick = () => {
-    isVisible = !isVisible;
-    container.style.display = isVisible ? "block" : "none";
-};
 
 document.addEventListener("keydown", e => {
     if (e.ctrlKey && e.code === "Space") {
