@@ -191,17 +191,29 @@ function renderRows(){
         btn.style.borderRadius="6px"; 
         btn.style.background="#2e8b57"; 
         btn.style.color="#fff"; 
-        btn.onclick=()=>{ 
-            const input=document.querySelector(".msg-reply-box[contenteditable='true']")||document.querySelector(".msg-reply-box"); 
-            if(!input){alert("Không tìm thấy ô nhập tin nhắn (.msg-reply-box).");return;} 
-            const frag=createFragmentFromText(r.text); 
-            input.focus();input.innerHTML="";input.appendChild(frag); 
-            input.dispatchEvent(new InputEvent("input",{bubbles:true,cancelable:true})); 
-            setTimeout(()=>{ 
-                const sendBtn=document.querySelector("div[data-test-fc-send-button='root']"); 
-                if(sendBtn)sendBtn.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true})); 
-            },50); 
-        }; 
+       btn.onclick=()=>{ 
+    const input=document.querySelector(".msg-reply-box[contenteditable='true']") 
+              || document.querySelector(".msg-reply-box"); 
+    if(!input){ 
+        alert("Không tìm thấy ô nhập tin nhắn (.msg-reply-box)."); 
+        return; 
+    } 
+
+    // Giữ nguyên \n trong text, đừng convert thành <br>
+    const text = r.text.replace(/\r\n?/g, "\n");
+
+    input.focus();
+    input.innerHTML = "";              // xoá trước
+    input.textContent = text;          // gán thẳng dạng text (giữ cả dòng trắng)
+
+    input.dispatchEvent(new InputEvent("input",{bubbles:true,cancelable:true})); 
+
+    setTimeout(()=>{ 
+        const sendBtn=document.querySelector("div[data-test-fc-send-button='root']"); 
+        if(sendBtn) sendBtn.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true})); 
+    },50); 
+};
+
         td3.appendChild(btn); 
         tr.appendChild(td3); 
 
