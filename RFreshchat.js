@@ -267,11 +267,85 @@ tableWrapper.appendChild(table);
 container.appendChild(tableWrapper); 
 document.body.appendChild(container); 
 
-let visible=true; 
-toggleBtn.onclick=()=>{visible=!visible;tableWrapper.style.display=visible?"block":"none";}; 
-document.addEventListener("keydown",e=>{ 
-    if(e.ctrlKey&&e.code==="Space"){ 
-        visible=!visible; tableWrapper.style.display=visible?"block":"none"; e.preventDefault(); 
-    } 
-}); 
+// Cho phép kéo thả container
+let isDragging = false;
+let offsetX, offsetY;
+
+toggleBtn.style.cursor = "move"; // đổi thành tay kéo khi rê vào header
+
+toggleBtn.addEventListener("mousedown", (e) => {
+    isDragging = true;
+    const rect = container.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+    document.body.style.userSelect = "none"; // tránh bôi đen chữ khi kéo
+});
+
+document.addEventListener("mousemove", (e) => {
+    if (isDragging) {
+        container.style.left = (e.clientX - offsetX) + "px";
+        container.style.top = (e.clientY - offsetY) + "px";
+        container.style.right = "auto"; // bỏ cố định right
+        container.style.bottom = "auto"; // bỏ cố định bottom
+        container.style.position = "fixed";
+    }
+});
+
+document.addEventListener("mouseup", () => {
+    isDragging = false;
+    document.body.style.userSelect = "auto";
+});
+// Thêm nút kéo resize ở góc phải dưới
+const resizeHandle = document.createElement("div");
+resizeHandle.style.width = "12px";
+resizeHandle.style.height = "12px";
+resizeHandle.style.background = "rgba(0,0,0,0.3)";
+resizeHandle.style.position = "absolute";
+resizeHandle.style.right = "2px";
+resizeHandle.style.bottom = "2px";
+resizeHandle.style.cursor = "nwse-resize";
+resizeHandle.style.borderRadius = "2px";
+container.appendChild(resizeHandle);
+
+let isResizing = false, startX, startY, startWidth, startHeight;
+
+resizeHandle.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+    isResizing = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    startWidth = container.offsetWidth;
+    startHeight = container.offsetHeight;
+    document.body.style.userSelect = "none";
+});
+
+document.addEventListener("mousemove", (e) => {
+    if (isResizing) {
+        const newWidth = startWidth + (e.clientX - startX);
+        const newHeight = startHeight + (e.clientY - startY);
+        container.style.width = newWidth + "px";
+        container.style.height = newHeight + "px";
+    }
+});
+
+document.addEventListener("mouseup", () => {
+    isResizing = false;
+    document.body.style.userSelect = "auto";
+});
+
+let isVisible = true;
+
+toggleBtn.onclick = () => {
+    isVisible = !isVisible;
+    container.style.display = isVisible ? "block" : "none";
+};
+
+document.addEventListener("keydown", e => {
+    if (e.ctrlKey && e.code === "Space") {
+        isVisible = !isVisible;
+        container.style.display = isVisible ? "block" : "none";
+        e.preventDefault();
+    }
+});
+
 })();

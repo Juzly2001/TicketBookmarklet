@@ -66,7 +66,7 @@ box.style.cssText = `
     min-width:560px;
     min-height:200px;
     width:560px;     /* bắt buộc width */
-    height:460px;    /* bắt buộc height */
+    height:200px;    /* bắt buộc height */
     box-sizing:border-box;  /* ✅ quan trọng */
     transition:all .2s ease;
     resize:both;
@@ -127,7 +127,7 @@ box.style.cssText = `
     <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
       <button id="addRowBtn" style="padding:4px 12px;border-radius:5px;border:1px solid #28a745;background:#28a745;color:#fff;cursor:pointer;">+ Add row</button>
       <label>Delay(ms):
-        <input id="delayInput" type="number" min="50" value="200" style="width:80px;padding:4px;border:1px solid #bbb;border-radius:5px;text-align:right;">
+        <input id="delayInput" type="number" min="50" value="0" style="width:80px;padding:4px;border:1px solid #bbb;border-radius:5px;text-align:right;">
       </label>
       <label>Subject:
         <input id="subjectInput" style="width:150px;padding:4px;border:1px solid #bbb;border-radius:5px;" value="PhuongNt32">
@@ -335,6 +335,33 @@ box.style.cssText = `
       box.style.display = (box.style.display === "none" ? "block" : "none");
     }
   });
+(function enableDrag(el) {
+  let offsetX = 0, offsetY = 0, isDown = false, startX = 0, startY = 0;
+
+  const header = el.querySelector("div"); // header đầu tiên
+  header.style.cursor = "move";
+
+  header.addEventListener("mousedown", e => {
+    isDown = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    const rect = el.getBoundingClientRect();
+    offsetX = rect.left;
+    offsetY = rect.top;
+    document.body.style.userSelect = "none";
+  });
+
+  document.addEventListener("mouseup", () => {
+    isDown = false;
+    document.body.style.userSelect = "";
+  });
+
+  document.addEventListener("mousemove", e => {
+    if (!isDown) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    el.style.transform = `translate(${offsetX + dx}px, ${offsetY + dy}px)`;
+  });
+})(box);
 
 })();
-
