@@ -36,13 +36,14 @@
     });
     document.body.appendChild(root);
 
+    
     // 🔔 Thêm dòng thông báo nhỏ phía trên các nút
     const statusText = document.createElement("div");
     statusText.id = "__autoReply_statusText";
     statusText.innerText = "✨ AutoReply sẵn sàng - nhấn (Ctrl + Space) để ẩn/hiện panel";
     Object.assign(statusText.style, {
       position: "absolute",
-      top: "25px",
+      top: "-25px",
       right: "0",
       background: "rgba(0,0,0,0.6)",
       color: "white",
@@ -295,9 +296,10 @@
     };
   }
 
-  // 🎹 Phím tắt "H" để ẩn/hiện toàn bộ panel
+  // 🎹 Phím tắt Ctrl + Space để ẩn/hiện toàn bộ panel
   document.addEventListener("keydown", e => {
-    if (e.ctrlKey && e.key.toLowerCase() === "Space") {
+    if (e.ctrlKey && e.code === "Space") {
+      e.preventDefault();
       const root = document.getElementById("__autoReply_root");
       if (!root) return;
       const isHidden = root.style.display === "none";
