@@ -36,7 +36,7 @@
     });
     document.body.appendChild(root);
 
-    
+
     // 🔔 Thêm dòng thông báo nhỏ phía trên các nút
     const statusText = document.createElement("div");
     statusText.id = "__autoReply_statusText";
@@ -204,7 +204,7 @@
     currentReview = target;
     currentReview.el.scrollIntoView({ behavior: "smooth", block: "center" });
     // hiển thị highlight màu xanh
-    currentReview.el.style.outline = "3px solid #00c853";
+    // currentReview.el.style.outline = "3px solid #00c853";
     currentReview.btn.click();
 
     let textarea;
