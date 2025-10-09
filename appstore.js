@@ -26,7 +26,7 @@
     root.id = "__autoReply_root";
     Object.assign(root.style, {
       position: "fixed",
-      top: "25px",
+      top: "40px",
       right: "16px",
       zIndex: 999999,
       display: "flex",
@@ -42,7 +42,7 @@
     statusText.innerText = "✨ AutoReply sẵn sàng - nhấn (Ctrl + Space) để ẩn/hiện panel";
     Object.assign(statusText.style, {
       position: "absolute",
-      top: "10px",
+      top: "25px",
       right: "0",
       background: "rgba(0,0,0,0.6)",
       color: "white",
