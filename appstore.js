@@ -26,7 +26,7 @@
     root.id = "__autoReply_root";
     Object.assign(root.style, {
       position: "fixed",
-      top: "16px",
+      top: "25px",
       right: "16px",
       zIndex: 999999,
       display: "flex",
@@ -35,6 +35,24 @@
       fontFamily: "system-ui, Arial"
     });
     document.body.appendChild(root);
+
+    // 🔔 Thêm dòng thông báo nhỏ phía trên các nút
+    const statusText = document.createElement("div");
+    statusText.id = "__autoReply_statusText";
+    statusText.innerText = "✨ AutoReply sẵn sàng - nhấn (Ctrl + Space) để ẩn/hiện panel";
+    Object.assign(statusText.style, {
+      position: "absolute",
+      top: "10px",
+      right: "0",
+      background: "rgba(0,0,0,0.6)",
+      color: "white",
+      fontSize: "13px",
+      padding: "4px 10px",
+      borderRadius: "6px",
+      fontFamily: "system-ui, Arial",
+      boxShadow: "0 1px 4px rgba(0,0,0,0.3)",
+    });
+    root.appendChild(statusText);
 
     // 🟢 Tự động
     const autoBtn = document.createElement("button");
@@ -102,7 +120,7 @@
     root.appendChild(btn);
     root.appendChild(submitHelper);
   }
-
+  
   let autoMode = false;
   let soundOn = false;
   let currentReview = null;
@@ -276,6 +294,17 @@
       autoBtnEl.style.background = autoMode ? "#28a745" : "#6c757d";
     };
   }
+
+  // 🎹 Phím tắt "H" để ẩn/hiện toàn bộ panel
+  document.addEventListener("keydown", e => {
+    if (e.ctrlKey && e.key.toLowerCase() === "Space") {
+      const root = document.getElementById("__autoReply_root");
+      if (!root) return;
+      const isHidden = root.style.display === "none";
+      root.style.display = isHidden ? "flex" : "none";
+    }
+  });
+
 
   // 🔊 Nút bật/tắt âm báo
   const soundBtnEl = document.getElementById("__autoReply_sound");
