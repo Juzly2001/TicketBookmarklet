@@ -318,13 +318,11 @@
     };
   }
 
-  /* === 🧠 AUTO SUBMIT (5–50s delay) + hiển thị đếm ngược === */
+  /* === 🧠 AUTO SUBMIT: delay ngẫu nhiên từ 0 đến số nhập === */
   let autoSubmitOn = false;
   let checkInterval = null;
   let pendingTimeout = null;
   let countdownTimer = null;
-  let customDelay = 10000; // 🆕 giá trị mặc định
-
   const countdownText = document.getElementById("__autoReply_countdown");
 
   const autoSubmitBtn = document.createElement("button");
@@ -342,12 +340,11 @@
   });
   document.getElementById("__autoReply_root").appendChild(autoSubmitBtn);
 
-  // 🆕 Ô input để nhập delay (giây)
+  // 🆕 Ô nhập delay
   const delayInput = document.createElement("input");
   delayInput.type = "number";
   delayInput.min = 1;
-  delayInput.max = 999;
-  delayInput.value = 25;
+  delayInput.value = 10;
   delayInput.placeholder = "Delay (giây)";
   Object.assign(delayInput.style, {
     width: "90px",
@@ -359,37 +356,28 @@
   });
   document.getElementById("__autoReply_root").appendChild(delayInput);
 
-  const randMs = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-
   autoSubmitBtn.onclick = () => {
     autoSubmitOn = !autoSubmitOn;
     autoSubmitBtn.innerText = autoSubmitOn
       ? "🟢 Auto Submit: BẬT"
       : "⚪ Auto Submit: TẮT";
     autoSubmitBtn.style.background = autoSubmitOn ? "#28a745" : "#6c757d";
-    delayInput.style.display = autoSubmitOn ? "block" : "none"; // 🆕 hiện/ẩn ô input
+    delayInput.style.display = autoSubmitOn ? "block" : "none";
 
     if (autoSubmitOn) {
-      if (!location.hostname.includes("appstoreconnect.apple.com")) {
-        alert("Auto Submit chỉ hoạt động trên appstoreconnect.apple.com!");
-        autoSubmitOn = false;
-        autoSubmitBtn.innerText = "⚪ Auto Submit: TẮT";
-        autoSubmitBtn.style.background = "#6c757d";
-        delayInput.style.display = "none";
-        return;
-      }
-
       checkInterval = setInterval(() => {
         const submitBtn = [...document.querySelectorAll("button")].find(
           b => b.textContent.trim() === "Submit"
         );
         if (!submitBtn) return;
         if (!submitBtn.disabled && !pendingTimeout) {
-          customDelay = Math.max(1, parseInt(delayInput.value) || 10) * 1000; // 🆕 lấy giá trị từ input
-          let remain = Math.floor(customDelay / 1000);
+          const maxDelay = Math.max(1, parseInt(delayInput.value) || 10);
+          const randomDelay = Math.random() * maxDelay * 1000;
+          let remain = Math.floor(randomDelay / 1000);
           countdownText.style.display = "block";
           countdownText.innerText = `🕒 Auto submit sau ${remain}s`;
 
+          clearInterval(countdownTimer);
           countdownTimer = setInterval(() => {
             remain--;
             if (remain > 0) {
@@ -406,15 +394,14 @@
             }
             pendingTimeout = null;
             countdownText.style.display = "none";
-          }, customDelay);
+          }, randomDelay);
         }
       }, 1000);
     } else {
       clearInterval(checkInterval);
       clearInterval(countdownTimer);
-      checkInterval = null;
-      countdownText.style.display = "none";
       if (pendingTimeout) clearTimeout(pendingTimeout);
+      countdownText.style.display = "none";
       pendingTimeout = null;
     }
   };
