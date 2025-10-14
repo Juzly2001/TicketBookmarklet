@@ -5,7 +5,6 @@
     "Chúng mình rất tiếc vì trải nghiệm không tốt của bạn. Bạn vui lòng vào ứng dụng Zalopay >> chọn 'Tài khoản' >> 'Trung tâm hỗ trợ' và cung cấp thông tin liên quan để có thể được hỗ trợ nhanh nhất nhé!";
   const delay = ms => new Promise(r => setTimeout(r, ms));
 
-  // Âm báo đơn giản
   function playBeep() {
     if (!soundOn) return;
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -20,7 +19,6 @@
     osc.stop(ctx.currentTime + 0.25);
   }
 
-  // Tạo giao diện nút điều khiển
   if (!document.getElementById("__autoReply_root")) {
     const root = document.createElement("div");
     root.id = "__autoReply_root";
@@ -36,11 +34,10 @@
     });
     document.body.appendChild(root);
 
-
-    // 🔔 Thêm dòng thông báo nhỏ phía trên các nút
     const statusText = document.createElement("div");
     statusText.id = "__autoReply_statusText";
-    statusText.innerText = "✨ AutoReply sẵn sàng - nhấn (Ctrl + Space) để ẩn/hiện panel";
+    statusText.innerText =
+      "✨ AutoReply sẵn sàng - nhấn (Ctrl + Space) để ẩn/hiện panel";
     Object.assign(statusText.style, {
       position: "absolute",
       top: "-25px",
@@ -51,11 +48,27 @@
       padding: "4px 10px",
       borderRadius: "6px",
       fontFamily: "system-ui, Arial",
-      boxShadow: "0 1px 4px rgba(0,0,0,0.3)",
+      boxShadow: "0 1px 4px rgba(0,0,0,0.3)"
     });
     root.appendChild(statusText);
 
-    // 🟢 Tự động
+    const countdownText = document.createElement("div");
+    countdownText.id = "__autoReply_countdown";
+    countdownText.innerText = "";
+    Object.assign(countdownText.style, {
+      position: "absolute",
+      top: "40px",
+      right: "0",
+      color: "#ffd700",
+      fontSize: "13px",
+      fontWeight: "bold",
+      padding: "2px 10px",
+      display: "none",
+      background: "rgba(0,0,0,0.5)",
+      borderRadius: "6px"
+    });
+    root.appendChild(countdownText);
+
     const autoBtn = document.createElement("button");
     autoBtn.id = "__autoReply_autoMode";
     autoBtn.innerText = "🟡 Tự động: TẮT";
@@ -70,7 +83,6 @@
       boxShadow: "0 2px 8px rgba(0,0,0,0.18)"
     });
 
-    // 🔊 Âm báo
     const soundBtn = document.createElement("button");
     soundBtn.id = "__autoReply_sound";
     soundBtn.innerText = "🔇 Âm báo: TẮT";
@@ -85,7 +97,6 @@
       boxShadow: "0 2px 8px rgba(0,0,0,0.18)"
     });
 
-    // Nút chính
     const btn = document.createElement("button");
     btn.id = "__autoReply_start";
     btn.innerText = "🔍 Bắt đầu trả lời tuần tự";
@@ -100,7 +111,6 @@
       boxShadow: "0 2px 8px rgba(0,0,0,0.25)"
     });
 
-    // Submit phụ
     const submitHelper = document.createElement("button");
     submitHelper.id = "__autoReply_clickSubmit";
     submitHelper.innerText = "▶️ Click Submit (X)";
@@ -115,13 +125,12 @@
       boxShadow: "0 2px 8px rgba(0,0,0,0.18)"
     });
 
-    // thêm vào giao diện
-    root.appendChild(autoBtn);
-    root.appendChild(soundBtn);
     root.appendChild(btn);
     root.appendChild(submitHelper);
+    root.appendChild(autoBtn);
+    root.appendChild(soundBtn);
   }
-  
+
   let autoMode = false;
   let soundOn = false;
   let currentReview = null;
@@ -144,8 +153,7 @@
       }));
 
     withButtons.sort((a, b) => {
-      if (Math.abs(a.rect.top - b.rect.top) > 10)
-        return a.rect.top - b.rect.top;
+      if (Math.abs(a.rect.top - b.rect.top) > 10) return a.rect.top - b.rect.top;
       return a.rect.left - b.rect.left;
     });
 
@@ -154,7 +162,9 @@
 
   function findNextUnreplied() {
     const all = getSortedReviews();
-    return all.find(r => r.btn && r.btn.innerText.trim().toLowerCase() === "reply");
+    return all.find(
+      r => r.btn && r.btn.innerText.trim().toLowerCase() === "reply"
+    );
   }
 
   function waitForResponseUpdate(callback) {
@@ -203,8 +213,6 @@
     }
     currentReview = target;
     currentReview.el.scrollIntoView({ behavior: "smooth", block: "center" });
-    // hiển thị highlight màu xanh
-    // currentReview.el.style.outline = "3px solid #00c853";
     currentReview.btn.click();
 
     let textarea;
@@ -227,8 +235,6 @@
     if (submitBtn) {
       submitBtn.scrollIntoView({ behavior: "smooth", block: "center" });
       submitBtn.style.boxShadow = "0 0 8px 2px #0070C9";
-
-      // Theo dõi khi submit khả dụng -> kêu "ting"
       if (submitReadyChecker) clearInterval(submitReadyChecker);
       submitReadyChecker = setInterval(() => {
         if (!submitBtn.disabled) {
@@ -260,7 +266,6 @@
     };
   }
 
-  // xử lý click Submit phụ và phím tắt Ctrl+X
   const submitHelperEl = document.getElementById("__autoReply_clickSubmit");
   function clickSubmitAction() {
     const submitBtn = [...document.querySelectorAll("button")].find(
@@ -277,16 +282,13 @@
     submitHelperEl.onclick = clickSubmitAction;
   }
 
-  // 🎹 Phím tắt X để bấm Submit
   document.addEventListener("keydown", e => {
-    // if (e.ctrlKey && e.key.toLowerCase() === "x")
-    if (e.key.toLowerCase() === "x"){
+    if (e.key.toLowerCase() === "x") {
       e.preventDefault();
       clickSubmitAction();
     }
   });
 
-  // ⚙️ Nút tự động bật/tắt
   const autoBtnEl = document.getElementById("__autoReply_autoMode");
   if (autoBtnEl) {
     autoBtnEl.onclick = () => {
@@ -296,7 +298,6 @@
     };
   }
 
-  // 🎹 Phím tắt Ctrl + Space để ẩn/hiện toàn bộ panel
   document.addEventListener("keydown", e => {
     if (e.ctrlKey && e.code === "Space") {
       e.preventDefault();
@@ -307,8 +308,6 @@
     }
   });
 
-
-  // 🔊 Nút bật/tắt âm báo
   const soundBtnEl = document.getElementById("__autoReply_sound");
   if (soundBtnEl) {
     soundBtnEl.onclick = () => {
@@ -318,4 +317,105 @@
       if (soundOn) playBeep();
     };
   }
+
+  /* === 🧠 AUTO SUBMIT (5–50s delay) + hiển thị đếm ngược === */
+  let autoSubmitOn = false;
+  let checkInterval = null;
+  let pendingTimeout = null;
+  let countdownTimer = null;
+  let customDelay = 10000; // 🆕 giá trị mặc định
+
+  const countdownText = document.getElementById("__autoReply_countdown");
+
+  const autoSubmitBtn = document.createElement("button");
+  autoSubmitBtn.id = "__autoReply_autoSubmit";
+  autoSubmitBtn.innerText = "⚪ Auto Submit: TẮT";
+  Object.assign(autoSubmitBtn.style, {
+    padding: "10px 12px",
+    background: "#6c757d",
+    color: "white",
+    fontSize: "14px",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.18)"
+  });
+  document.getElementById("__autoReply_root").appendChild(autoSubmitBtn);
+
+  // 🆕 Ô input để nhập delay (giây)
+  const delayInput = document.createElement("input");
+  delayInput.type = "number";
+  delayInput.min = 1;
+  delayInput.max = 999;
+  delayInput.value = 25;
+  delayInput.placeholder = "Delay (giây)";
+  Object.assign(delayInput.style, {
+    width: "90px",
+    padding: "8px 6px",
+    border: "1px solid #ccc",
+    borderRadius: "8px",
+    fontSize: "14px",
+    display: "none"
+  });
+  document.getElementById("__autoReply_root").appendChild(delayInput);
+
+  const randMs = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+  autoSubmitBtn.onclick = () => {
+    autoSubmitOn = !autoSubmitOn;
+    autoSubmitBtn.innerText = autoSubmitOn
+      ? "🟢 Auto Submit: BẬT"
+      : "⚪ Auto Submit: TẮT";
+    autoSubmitBtn.style.background = autoSubmitOn ? "#28a745" : "#6c757d";
+    delayInput.style.display = autoSubmitOn ? "block" : "none"; // 🆕 hiện/ẩn ô input
+
+    if (autoSubmitOn) {
+      if (!location.hostname.includes("appstoreconnect.apple.com")) {
+        alert("Auto Submit chỉ hoạt động trên appstoreconnect.apple.com!");
+        autoSubmitOn = false;
+        autoSubmitBtn.innerText = "⚪ Auto Submit: TẮT";
+        autoSubmitBtn.style.background = "#6c757d";
+        delayInput.style.display = "none";
+        return;
+      }
+
+      checkInterval = setInterval(() => {
+        const submitBtn = [...document.querySelectorAll("button")].find(
+          b => b.textContent.trim() === "Submit"
+        );
+        if (!submitBtn) return;
+        if (!submitBtn.disabled && !pendingTimeout) {
+          customDelay = Math.max(1, parseInt(delayInput.value) || 10) * 1000; // 🆕 lấy giá trị từ input
+          let remain = Math.floor(customDelay / 1000);
+          countdownText.style.display = "block";
+          countdownText.innerText = `🕒 Auto submit sau ${remain}s`;
+
+          countdownTimer = setInterval(() => {
+            remain--;
+            if (remain > 0) {
+              countdownText.innerText = `🕒 Auto submit sau ${remain}s`;
+            } else {
+              clearInterval(countdownTimer);
+            }
+          }, 1000);
+
+          pendingTimeout = setTimeout(() => {
+            if (autoSubmitOn && !submitBtn.disabled) {
+              submitBtn.click();
+              playBeep();
+            }
+            pendingTimeout = null;
+            countdownText.style.display = "none";
+          }, customDelay);
+        }
+      }, 1000);
+    } else {
+      clearInterval(checkInterval);
+      clearInterval(countdownTimer);
+      checkInterval = null;
+      countdownText.style.display = "none";
+      if (pendingTimeout) clearTimeout(pendingTimeout);
+      pendingTimeout = null;
+    }
+  };
 })();
