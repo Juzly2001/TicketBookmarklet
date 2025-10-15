@@ -8,7 +8,7 @@ function initReviewLinksWidget(){
   Object.assign(box.style,{
     position:"fixed",top:"160px",right:"10px",zIndex:999998,
     background:"#fff",border:"1px solid #e5e7eb",borderRadius:"12px",
-    padding:"12px",width:"700px",maxHeight:"400px",overflowY:"auto",
+    padding:"12px",width:"720px",maxHeight:"400px",overflowY:"auto",
     fontSize:"15px",boxShadow:"0 4px 12px rgba(0,0,0,0.1)",
     fontFamily:"Segoe UI,Roboto,Arial,sans-serif"
   });
@@ -24,7 +24,8 @@ function initReviewLinksWidget(){
   const copyAllBtn=document.createElement("button");copyAllBtn.textContent="Copy All";styleBtn(copyAllBtn);
   const againBtn=document.createElement("button");againBtn.textContent="Again";styleBtn(againBtn);
   const scanBtn=document.createElement("button");scanBtn.textContent="Scan";styleBtn(scanBtn);
-  btnArea.append(toggleBtn,copyAllBtn,againBtn,scanBtn);
+  const submitBtn=document.createElement("button");submitBtn.textContent="Auto Submit";styleBtn(submitBtn);
+  btnArea.append(toggleBtn,copyAllBtn,againBtn,scanBtn,submitBtn);
   header.append(title,btnArea);
 
   const table=document.createElement("table");
@@ -59,9 +60,8 @@ function initReviewLinksWidget(){
     tbody.appendChild(row);
   }
 
-  // 🧩 Đọc clipboard với chờ link mới
   async function captureClipboardLink(waitForNew=false, oldLink=null){
-    const maxWait=2000; // tối đa 2 giây
+    const maxWait=2000;
     const start=Date.now();
     let text=null;
     while(Date.now()-start<maxWait){
@@ -79,7 +79,6 @@ function initReviewLinksWidget(){
     return null;
   }
 
-  // 🧠 Nút “Scan” tự click từng link-share-button
   async function scanReviewsWithReply(){
     const reviews=document.querySelectorAll("review");
     let count=0;
@@ -91,13 +90,26 @@ function initReviewLinksWidget(){
         shareBtn.click();
         const newLink=await captureClipboardLink(true,oldLink);
         if(newLink) count++;
-        await new Promise(r=>setTimeout(r,400)); // nghỉ nhẹ để tránh trùng clipboard
+        await new Promise(r=>setTimeout(r,400));
       }
     }
-    alert(`✅ Quét được ${count} link mới!`);
+    alert(`✅ Đã quét xong link ${count} review!`);
   }
 
-  // Gắn click copy clipboard vào tất cả nút share
+  async function autoSubmitReplies(){
+    const reviews=document.querySelectorAll("review");
+    let done=0;
+    for(const rev of reviews){
+      const btn=rev.querySelector('material-button[debug-id="submit-button"] button');
+      if(btn){
+        btn.click();
+        done++;
+        await new Promise(r=>setTimeout(r,300)); // chờ nhẹ để tránh bị chặn
+      }
+    }
+    alert(`🚀 Đã "Đăng trả lời" cho ${done} review!`);
+  }
+
   document.querySelectorAll('material-button[debug-id="link-share-button"] button').forEach(btn=>{
     const newBtn=btn.cloneNode(true);
     btn.parentNode.replaceChild(newBtn,btn);
@@ -111,14 +123,14 @@ function initReviewLinksWidget(){
   };
 
   againBtn.onclick=()=>{box.remove();initReviewLinksWidget();console.log("🔄 Reset widget!");};
-
   scanBtn.onclick=scanReviewsWithReply;
+  submitBtn.onclick=autoSubmitReplies;
 
   console.log("✅ Review Links đã bật!");
   initSampleContentWidget(box);
   initFloatingToggleBtn();
 
-  // --- Các hàm phụ giữ nguyên ---
+  // ==== Các hàm phụ giữ nguyên ====
   function styleBtn(btn,type="default"){Object.assign(btn.style,{border:"1px solid #d1d5db",background:"#f9fafb",borderRadius:"6px",padding:"6px 12px",cursor:"pointer",fontSize:"14px",marginLeft:"6px"});btn.onmouseenter=()=>btn.style.background=type==="danger"?"#fee2e2":"#f3f4f6";btn.onmouseleave=()=>btn.style.background="#f9fafb";}
   function toggleWidgets(){["mini-excel-review-links","mini-excel-sample-content"].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=el.style.display==="none"?"block":"none";});}
   function initFloatingToggleBtn(){const BTN_ID="mini-excel-floating-toggle";document.getElementById(BTN_ID)?.remove();const btn=document.createElement("button");btn.id=BTN_ID;btn.textContent="Hiện";Object.assign(btn.style,{position:"fixed",top:"70px",right:"50px",zIndex:100000,background:"red",color:"white",border:"none",borderRadius:"50%",width:"50px",height:"50px",cursor:"pointer",fontSize:"16px",boxShadow:"0 2px 6px rgba(0,0,0,0.2)"});btn.onclick=toggleWidgets;document.body.appendChild(btn);}
