@@ -3,10 +3,10 @@ const ID="mini-excel-chat-tool-left-tooltip";
 if(document.getElementById(ID))document.getElementById(ID).remove(); 
 
 const rows=[ 
-    {id:"St1",text:"Cảm ơn anh/chị đã liên hệ đến Fanpage chính thức của Zalopay. Em là Phương, xin phép hỗ trợ anh/chị ạ."}, 
-    {id:"St2",text:"Em có thể hỗ trợ thông tin gì cho mình ạ?"}, 
-    {id:"dva",text:"Dạ vâng ạ"}, 
-    {id:"Hỗ trợ thêm",text:"Dạ Anh/chị còn cần em hỗ trợ thêm thông tin gì khác nữa không ạ?"} 
+    {id:"HT - St1",text:"Cảm ơn anh/chị đã liên hệ đến Fanpage chính thức của Zalopay. Em là Phương, xin phép hỗ trợ anh/chị ạ."}, 
+    {id:"HT - St2",text:"Em có thể hỗ trợ thông tin gì cho mình ạ?"}, 
+    {id:"HT - dva",text:"Dạ vâng ạ"}, 
+    {id:"HT - Hỗ trợ thêm",text:"Dạ Anh/chị còn cần em hỗ trợ thêm thông tin gì khác nữa không ạ?"} 
 ]; 
 
 // =========================
