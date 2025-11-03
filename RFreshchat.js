@@ -123,24 +123,33 @@ table.appendChild(headerTools);
 // =========================
 // Tooltip
 // =========================
-const tooltip=document.createElement("div");
-tooltip.style.position="absolute";
-tooltip.style.background="#333";
-tooltip.style.color="#fff";
-tooltip.style.padding="6px 10px";
-tooltip.style.borderRadius="6px";
-tooltip.style.fontSize="13px";
-tooltip.style.maxWidth="300px";
-tooltip.style.whiteSpace="pre-wrap";
-tooltip.style.zIndex=9999999;
-tooltip.style.opacity=0;
-tooltip.style.transition="opacity 0.2s, transform 0.2s";
-tooltip.style.pointerEvents="none";
+const tooltip = document.createElement("div");
+tooltip.style.position = "absolute";
+tooltip.style.background = "#333";
+tooltip.style.color = "#fff";
+tooltip.style.padding = "6px 10px";
+tooltip.style.borderRadius = "6px";
+tooltip.style.fontSize = "13px";
+tooltip.style.maxWidth = "300px";
+tooltip.style.whiteSpace = "pre-wrap";
+tooltip.style.zIndex = 9999999;
+tooltip.style.opacity = 0;
+tooltip.style.transition = "opacity 0.2s, transform 0.2s";
+
+// ✅ Cho phép copy, chọn text, cuộn, tương tác chuột
+tooltip.style.pointerEvents = "auto";
+tooltip.style.userSelect = "text";
+tooltip.style.cursor = "text";
+tooltip.style.maxHeight = "200px";
+tooltip.style.overflowY = "auto";
+
 document.body.appendChild(tooltip);
+
 
 // =========================
 // Hàm render bảng
 // =========================
+let hideTooltipTimeout;
 function renderRows(){ 
     Array.from(table.querySelectorAll("tr[data-row='true']")).forEach(tr=>tr.remove()); 
     rows.forEach(r=>{ 
@@ -163,20 +172,38 @@ function renderRows(){
         td2.style.textOverflow="ellipsis";
         td2.style.maxHeight = "20px";          // đảm bảo không vượt ô 
         td2.style.borderBottom="1px solid #f1f1f1"; 
-        td2.onmouseenter=e=>{ 
-            tooltip.innerHTML=""; 
-            tooltip.appendChild(createFragmentFromText(r.text)); 
-            const rect=td2.getBoundingClientRect(); 
-            tooltip.style.left=(rect.left-window.scrollX-tooltip.offsetWidth-8)+"px"; 
-            let topPos=rect.top+window.scrollY; 
-            if(topPos+tooltip.offsetHeight>window.scrollY+window.innerHeight) 
-                topPos=window.scrollY+window.innerHeight-tooltip.offsetHeight-8; 
-            if(topPos<window.scrollY) topPos=window.scrollY+8; 
-            tooltip.style.top=topPos+"px"; 
-            tooltip.style.opacity=1; 
-            tooltip.style.transform="translateX(0)"; 
+        td2.onmouseenter = (e) => {
+            clearTimeout(hideTooltipTimeout);
+            tooltip.innerHTML = "";
+            tooltip.appendChild(createFragmentFromText(r.text));
+            const rect = td2.getBoundingClientRect();
+            tooltip.style.left = (rect.left - window.scrollX - tooltip.offsetWidth - 8) + "px";
+            let topPos = rect.top + window.scrollY;
+            if (topPos + tooltip.offsetHeight > window.scrollY + window.innerHeight)
+                topPos = window.scrollY + window.innerHeight - tooltip.offsetHeight - 8;
+            if (topPos < window.scrollY) topPos = window.scrollY + 8;
+            tooltip.style.top = topPos + "px";
+            tooltip.style.opacity = 1;
+            tooltip.style.transform = "translateX(0)";
+        };
+      
+
+        td2.onmouseleave = (e) => {
+            hideTooltipTimeout = setTimeout(() => {
+                tooltip.style.opacity = 0;
+                tooltip.style.transform = "translateX(-8px)";
+            }, 300);
         }; 
-        td2.onmouseleave=e=>{ tooltip.style.opacity=0; tooltip.style.transform="translateX(-8px)"; }; 
+
+        tooltip.onmouseenter = () => {
+            clearTimeout(hideTooltipTimeout);
+        };
+
+        tooltip.onmouseleave = () => {
+            tooltip.style.opacity = 0;
+            tooltip.style.transform = "translateX(-8px)";
+        };
+
         tr.appendChild(td2); 
 
         const td3=document.createElement("td"); 
