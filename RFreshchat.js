@@ -176,6 +176,7 @@ function renderRows(){
             clearTimeout(hideTooltipTimeout);
             tooltip.innerHTML = "";
             tooltip.appendChild(createFragmentFromText(r.text));
+
             const rect = td2.getBoundingClientRect();
             tooltip.style.left = (rect.left - window.scrollX - tooltip.offsetWidth - 8) + "px";
             let topPos = rect.top + window.scrollY;
@@ -183,26 +184,29 @@ function renderRows(){
                 topPos = window.scrollY + window.innerHeight - tooltip.offsetHeight - 8;
             if (topPos < window.scrollY) topPos = window.scrollY + 8;
             tooltip.style.top = topPos + "px";
+
             tooltip.style.opacity = 1;
             tooltip.style.transform = "translateX(0)";
-        };
-      
+            tooltip.style.pointerEvents = "auto"; // ✅ Cho phép hover tooltip
+            };
 
-        td2.onmouseleave = (e) => {
+            td2.onmouseleave = (e) => {
             hideTooltipTimeout = setTimeout(() => {
                 tooltip.style.opacity = 0;
                 tooltip.style.transform = "translateX(-8px)";
-            }, 300);
-        }; 
+                tooltip.style.pointerEvents = "none"; // ✅ Ngăn nhận chuột, khử hiệu ứng text-select
+            }, 200);
+            };
 
-        tooltip.onmouseenter = () => {
+            tooltip.onmouseenter = () => {
             clearTimeout(hideTooltipTimeout);
-        };
+            };
 
-        tooltip.onmouseleave = () => {
+            tooltip.onmouseleave = () => {
             tooltip.style.opacity = 0;
             tooltip.style.transform = "translateX(-8px)";
-        };
+            tooltip.style.pointerEvents = "none"; // ✅ Khử chọn chữ khi ẩn
+            };
 
         tr.appendChild(td2); 
 
