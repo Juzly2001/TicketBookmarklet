@@ -66,59 +66,229 @@ table.style.width="100%";
 table.style.tableLayout="fixed"; 
 
 // =========================
-// Thanh công cụ Import Excel + Search
+// Thanh công cụ Import Excel + Search (đẹp + có bàn phím ẩn hiện)
 // =========================
 const headerTools = document.createElement("tr");
 const thTools = document.createElement("th");
 thTools.colSpan = 3;
-thTools.style.borderBottom = "1px solid #eee";
-thTools.style.background = "#fafafa";
-thTools.style.padding = "4px";
+thTools.style.padding = "6px 10px";
+thTools.style.textAlign = "left";
+thTools.style.background = "#f8f9fa";
+thTools.style.borderBottom = "1px solid #ddd";
 
-// Wrapper flex
-const flexWrapper = document.createElement("div");
-flexWrapper.style.display = "flex";
-flexWrapper.style.width = "100%";
-flexWrapper.style.gap = "6px"; 
-
-// Nút Import Excel
+// Ô import
 const importLabel = document.createElement("label");
-importLabel.innerText = "📥 Import Excel";
-importLabel.style.display = "flex";
-importLabel.style.alignItems = "center";
-importLabel.style.justifyContent = "center";
-importLabel.style.flex = "0 0 30%";
-importLabel.style.padding = "6px 10px";
-importLabel.style.cursor = "pointer";
-importLabel.style.background = "#007bff";
+importLabel.textContent = "📂 Import Excel";
+importLabel.style.background = "#0d6efd";
 importLabel.style.color = "#fff";
+importLabel.style.padding = "6px 10px";
 importLabel.style.borderRadius = "6px";
-importLabel.style.fontWeight = "500";
-
+importLabel.style.cursor = "pointer";
+importLabel.style.marginRight = "8px";
+importLabel.style.display = "inline-block";
 const importInput = document.createElement("input");
 importInput.type = "file";
-importInput.accept = ".xlsx,.xls";
+importInput.accept = ".xls,.xlsx";
 importInput.style.display = "none";
+importInput.addEventListener("change", parseExcel);
 importLabel.appendChild(importInput);
 
-// Ô Search
+// Ô tìm kiếm
+const searchContainer = document.createElement("div");
+searchContainer.style.display = "inline-flex";
+searchContainer.style.alignItems = "center";
+searchContainer.style.border = "1px solid #ccc";
+searchContainer.style.borderRadius = "6px";
+searchContainer.style.padding = "2px 6px";
+searchContainer.style.background = "#fff";
+
 const searchInput = document.createElement("input");
-searchInput.type = "text";
 searchInput.placeholder = "Tìm theo ID...";
-searchInput.style.flex = "1";
-searchInput.style.padding = "6px";
-searchInput.style.fontSize = "13px";
-searchInput.style.border = "1px solid #ccc";
-searchInput.style.borderRadius = "6px";
+searchInput.style.border = "none";
+searchInput.style.outline = "none";
+searchInput.style.padding = "4px";
+searchInput.style.width = "100%";
+searchInput.addEventListener("input", (e) => {
+  renderRows(e.target.value);
+});
 
-// Đồng bộ chiều cao
-searchInput.style.height = importLabel.style.height = "36px";
+// Nút xóa input (SVG)
+const clearBtn = document.createElement("button");
+clearBtn.innerHTML = `
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
+    <path fill="none" stroke="#344054" stroke-width="2" stroke-linecap="round" d="M6 6l12 12M18 6l-12 12"/>
+  </svg>`;
+clearBtn.style.display = "flex";
+clearBtn.style.alignItems = "center";
+clearBtn.style.justifyContent = "center";
+clearBtn.style.width = "24px";
+clearBtn.style.height = "24px";
+clearBtn.style.border = "none";
+clearBtn.style.background = "transparent";
+clearBtn.style.cursor = "pointer";
+clearBtn.style.marginLeft = "4px";
+clearBtn.title = "Xóa nhanh";
+clearBtn.addEventListener("click", () => {
+  searchInput.value = "";
+  searchInput.dispatchEvent(new Event("input"));
+});
 
-flexWrapper.appendChild(importLabel);
-flexWrapper.appendChild(searchInput);
-thTools.appendChild(flexWrapper);
+// Nút toggle bàn phím (SVG)
+const keyboardToggle = document.createElement("button");
+keyboardToggle.innerHTML = `
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18">
+    <rect x="3" y="5" width="18" height="14" rx="2" ry="2" fill="none" stroke="#344054" stroke-width="2"/>
+    <path stroke="#344054" stroke-width="2" stroke-linecap="round" d="M7 9h.01M11 9h.01M15 9h.01M7 13h10M7 17h10"/>
+  </svg>`;
+keyboardToggle.style.display = "flex";
+keyboardToggle.style.alignItems = "center";
+keyboardToggle.style.justifyContent = "center";
+keyboardToggle.style.width = "24px";
+keyboardToggle.style.height = "24px";
+keyboardToggle.style.border = "none";
+keyboardToggle.style.background = "transparent";
+keyboardToggle.style.cursor = "pointer";
+keyboardToggle.style.marginLeft = "2px";
+keyboardToggle.title = "Bật/Tắt bàn phím";
+
+searchContainer.appendChild(searchInput);
+searchContainer.appendChild(clearBtn);
+searchContainer.appendChild(keyboardToggle);
+
+// =========================
+// HÀM GÕ TIẾNG VIỆT TELEX (giống Unikey cơ bản)
+// =========================
+function applyVietnameseTelex(str) {
+  // Bước 1: xử lý nguyên âm ghép (ưu tiên trước)
+  str = str
+    .replace(/dd/g, "đ")
+    .replace(/aa/g, "â")
+    .replace(/aw/g, "ă")
+    .replace(/ee/g, "ê")
+    .replace(/oo/g, "ô")
+    .replace(/ow/g, "ơ")
+    .replace(/uw/g, "ư");
+
+  // Bước 2: thêm dấu thanh (s, f, r, x, j)
+  str = str
+    .replace(/(a|ă|â|e|ê|i|o|ô|ơ|u|ư|y)s/g, (_, m) => ({
+      a: "á", ă: "ắ", â: "ấ", e: "é", ê: "ế", i: "í", o: "ó", ô: "ố", ơ: "ớ", u: "ú", ư: "ứ", y: "ý"
+    }[m] || m))
+    .replace(/(a|ă|â|e|ê|i|o|ô|ơ|u|ư|y)f/g, (_, m) => ({
+      a: "à", ă: "ằ", â: "ầ", e: "è", ê: "ề", i: "ì", o: "ò", ô: "ồ", ơ: "ờ", u: "ù", ư: "ừ", y: "ỳ"
+    }[m] || m))
+    .replace(/(a|ă|â|e|ê|i|o|ô|ơ|u|ư|y)r/g, (_, m) => ({
+      a: "ả", ă: "ẳ", â: "ẩ", e: "ẻ", ê: "ể", i: "ỉ", o: "ỏ", ô: "ổ", ơ: "ở", u: "ủ", ư: "ử", y: "ỷ"
+    }[m] || m))
+    .replace(/(a|ă|â|e|ê|i|o|ô|ơ|u|ư|y)x/g, (_, m) => ({
+      a: "ã", ă: "ẵ", â: "ẫ", e: "ẽ", ê: "ễ", i: "ĩ", o: "õ", ô: "ỗ", ơ: "ỡ", u: "ũ", ư: "ữ", y: "ỹ"
+    }[m] || m))
+    .replace(/(a|ă|â|e|ê|i|o|ô|ơ|u|ư|y)j/g, (_, m) => ({
+      a: "ạ", ă: "ặ", â: "ậ", e: "ẹ", ê: "ệ", i: "ị", o: "ọ", ô: "ộ", ơ: "ợ", u: "ụ", ư: "ự", y: "ỵ"
+    }[m] || m));
+
+  return str;
+}
+
+
+// Bàn phím ảo
+const keyboard = document.createElement("div");
+keyboard.style.display = "none";
+keyboard.style.marginTop = "8px";
+keyboard.style.padding = "8px";
+keyboard.style.background = "#fff";
+keyboard.style.border = "1px solid #ddd";
+keyboard.style.borderRadius = "10px";
+keyboard.style.boxShadow = "0 2px 6px rgba(0,0,0,0.1)";
+keyboard.style.textAlign = "center";
+keyboard.style.transition = "all 0.3s ease";
+keyboard.style.fontFamily = "monospace";
+
+const rowsKeys = [
+  "Q W E R T Y U I O P",
+  "A S D F G H J K L",
+  "Z X C V B N M"
+];
+
+rowsKeys.forEach((row) => {
+  const rowDiv = document.createElement("div");
+  rowDiv.style.margin = "4px 0";
+  row.split(" ").forEach((key) => {
+    const btn = document.createElement("button");
+    btn.textContent = key;
+    btn.style.margin = "2px";
+    btn.style.padding = "6px 10px";
+    btn.style.border = "1px solid #ccc";
+    btn.style.borderRadius = "8px";
+    btn.style.cursor = "pointer";
+    btn.style.background = "#f9f9f9";
+    btn.style.fontWeight = "500";
+    btn.addEventListener("click", () => {
+    let current = searchInput.value;
+    let newText = current + key.toLowerCase(); // nhập thường để ghép Telex
+    searchInput.value = applyVietnameseTelex(newText);
+    searchInput.dispatchEvent(new Event("input"));
+    });
+    btn.addEventListener("mousedown", () => (btn.style.background = "#e1e1e1"));
+    btn.addEventListener("mouseup", () => (btn.style.background = "#f9f9f9"));
+    rowDiv.appendChild(btn);
+  });
+  keyboard.appendChild(rowDiv);
+});
+
+keyboardToggle.addEventListener("click", () => {
+  keyboard.style.display = keyboard.style.display === "none" ? "block" : "none";
+});
+
+thTools.appendChild(importLabel);
+thTools.appendChild(searchContainer);
+thTools.appendChild(keyboard);
+
+// ======= Hàng cuối: Xóa, Space =======
+const extraRow = document.createElement("div");
+extraRow.style.display = "flex";
+extraRow.style.gap = "6px";
+extraRow.style.justifyContent = "center";
+extraRow.style.marginTop = "6px";
+
+// Nút Xóa
+const backspaceBtn = document.createElement("button");
+backspaceBtn.textContent = "←";
+backspaceBtn.style.padding = "8px 12px";
+backspaceBtn.style.borderRadius = "8px";
+backspaceBtn.style.border = "1px solid #ccc";
+backspaceBtn.style.cursor = "pointer";
+backspaceBtn.style.fontWeight = "600";
+backspaceBtn.style.background = "white";
+backspaceBtn.style.boxShadow = "0 1px 2px rgba(0,0,0,0.1)";
+backspaceBtn.addEventListener("click", () => {
+  searchInput.value = searchInput.value.slice(0, -1);
+  searchInput.dispatchEvent(new Event("input")); // 🔥 Cập nhật kết quả ngay
+});
+
+// Nút Space
+const spaceBtn = document.createElement("button");
+spaceBtn.textContent = "Space";
+spaceBtn.style.padding = "8px 32px";
+spaceBtn.style.borderRadius = "8px";
+spaceBtn.style.border = "1px solid #ccc";
+spaceBtn.style.cursor = "pointer";
+spaceBtn.style.fontWeight = "600";
+spaceBtn.style.background = "white";
+spaceBtn.style.boxShadow = "0 1px 2px rgba(0,0,0,0.1)";
+spaceBtn.addEventListener("click", () => {
+  searchInput.value += " ";
+  searchInput.dispatchEvent(new Event("input"));
+});
+
+extraRow.appendChild(spaceBtn);
+extraRow.appendChild(backspaceBtn);
+keyboard.appendChild(extraRow);
+
+
 headerTools.appendChild(thTools);
 table.appendChild(headerTools);
+
 
 // =========================
 // Tooltip
