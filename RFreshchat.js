@@ -160,7 +160,7 @@ function renderRows(){
         const td1=document.createElement("td"); 
         td1.innerText=r.id; 
         td1.style.padding="6px"; 
-        td1.style.textAlign="center"; 
+        td1.style.textAlign="left"; 
         td1.style.borderBottom="1px solid #f1f1f1"; 
         tr.appendChild(td1); 
 
@@ -204,7 +204,7 @@ function renderRows(){
 
             tooltip.onmouseleave = () => {
             tooltip.style.opacity = 0;
-            tooltip.style.transform = "translateX(-8px)";
+            tooltip.style.transform = "translateX(-8px)";   
             tooltip.style.pointerEvents = "none"; // ✅ Khử chọn chữ khi ẩn
             };
 
