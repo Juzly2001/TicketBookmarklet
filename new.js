@@ -288,7 +288,7 @@ box.style.cssText = `
 
 box.addEventListener("click", async e => {
   if (e.target.classList.contains("doAction")) {
-
+  try {
     // ====== Đoạn 1: Click Resolve & Create Ticket In Freshdesk ======
     await new Promise(resolve => {
       const btn = document.querySelector('.split-button.resolve-action.custom-split-dropdown[role="button"]');
@@ -318,7 +318,13 @@ box.addEventListener("click", async e => {
       },200);
     });
 
-    // ====== Chờ form mới render ======
+    // ====== Đoạn 2: Chờ đủ label trước khi chọn dropdown ======
+    const tr = e.target.closest("tr");
+    const yeuCau  = tr.children[0].querySelector("input").value.trim();
+    const chiTiet = tr.children[1].querySelector("input").value.trim();
+    const doiTac  = tr.children[2].querySelector("input").value.trim();
+    const subjVal = document.getElementById("subjectInput").value.trim() || "PhuongNt32";
+
     const waitForLabel = async (labelText, timeout = 5000) => {
       const interval = 100;
       let elapsed = 0;
@@ -332,25 +338,25 @@ box.addEventListener("click", async e => {
       return null;
     };
 
-    // ====== Đoạn 2: Chờ đủ label trước khi chọn dropdown ======
-    const tr = e.target.closest("tr");
-    const yeuCau  = tr.children[0].querySelector("input").value.trim();
-    const chiTiet = tr.children[1].querySelector("input").value.trim();
-    const doiTac  = tr.children[2].querySelector("input").value.trim();
-    const subjVal = document.getElementById("subjectInput").value.trim() || "PhuongNt32";
-
-    // Chờ từng label
     await waitForLabel("Yêu cầu");
     await waitForLabel("Chi tiết vấn đề");
     await waitForLabel("Đối tác");
 
     const subj = document.querySelector("#Subject");
-    if(subj){ subj.value = subjVal; subj.dispatchEvent(new Event("input",{bubbles:true})); }
+    if(subj){
+      subj.value = subjVal;
+      subj.dispatchEvent(new Event("input",{bubbles:true}));
+    }
 
     await selectDropdownChooseFirst("Yêu cầu", yeuCau);
     await selectDropdownChooseFirst("Chi tiết vấn đề", chiTiet);
     await selectDropdownChooseFirst("Đối tác", doiTac);
+
+  } finally {
+    // 💡 Đặt ở đây đảm bảo chỉ clear sau khi xong (kể cả có lỗi vẫn chạy)
+    console.clear();
   }
+}
 
   if(e.target.classList.contains("deleteRow")){
     e.target.closest("tr").remove();
