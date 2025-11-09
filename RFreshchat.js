@@ -78,14 +78,22 @@ thTools.style.borderBottom = "1px solid #ddd";
 
 // Ô import
 const importLabel = document.createElement("label");
-importLabel.textContent = "📂 Import Excel";
+importLabel.innerHTML = `
+<svg viewBox="0 -1.27 110.037 110.037" xmlns="http://www.w3.org/2000/svg" width="18" height="18" style="vertical-align: middle; margin-right: 6px;">
+  <g><path d="M57.55 0h7.425v10c12.513 0 25.025.025 37.537-.038 2.113.087 4.438-.062 6.275 1.2 1.287 1.85 1.138 4.2 1.225 6.325-.062 21.7-.037 43.388-.024 65.075-.062 3.638.337 7.35-.425 10.938-.5 2.6-3.625 2.662-5.713 2.75-12.95.037-25.912-.025-38.875 0v11.25h-7.763c-19.05-3.463-38.138-6.662-57.212-10V10.013C19.188 6.675 38.375 3.388 57.55 0z" fill="#207245"></path><path d="M64.975 13.75h41.25V92.5h-41.25V85h10v-8.75h-10v-5h10V62.5h-10v-5h10v-8.75h-10v-5h10V35h-10v-5h10v-8.75h-10v-7.5z" fill="#ffffff"></path><path d="M79.975 21.25h17.5V30h-17.5v-8.75z" fill="#207245"></path><path d="M37.025 32.962c2.825-.2 5.663-.375 8.5-.512a2607.344 2607.344 0 0 1-10.087 20.487c3.438 7 6.949 13.95 10.399 20.95a716.28 716.28 0 0 1-9.024-.575c-2.125-5.213-4.713-10.25-6.238-15.7-1.699 5.075-4.125 9.862-6.074 14.838-2.738-.038-5.476-.15-8.213-.263C19.5 65.9 22.6 59.562 25.912 53.312c-2.812-6.438-5.9-12.75-8.8-19.15 2.75-.163 5.5-.325 8.25-.475 1.862 4.888 3.899 9.712 5.438 14.725 1.649-5.312 4.112-10.312 6.225-15.45z" fill="#ffffff"></path><path d="M79.975 35h17.5v8.75h-17.5V35zM79.975 48.75h17.5v8.75h-17.5v-8.75zM79.975 62.5h17.5v8.75h-17.5V62.5zM79.975 76.25h17.5V85h-17.5v-8.75z" fill="#207245"></path></g>
+</svg>
+<span>Import</span>
+`;
 importLabel.style.background = "#0d6efd";
 importLabel.style.color = "#fff";
-importLabel.style.padding = "6px 10px";
+importLabel.style.padding = "6px 12px";
 importLabel.style.borderRadius = "6px";
 importLabel.style.cursor = "pointer";
 importLabel.style.marginRight = "8px";
-importLabel.style.display = "inline-block";
+importLabel.style.verticalAlign = "middle";
+importLabel.style.display = "inline-flex";
+importLabel.style.alignItems = "center"; // **giúp thẳng hàng với search**
+importLabel.style.height = "36px"; // cùng chiều cao với search
 const importInput = document.createElement("input");
 importInput.type = "file";
 importInput.accept = ".xls,.xlsx";
@@ -99,7 +107,8 @@ searchContainer.style.display = "inline-flex";
 searchContainer.style.alignItems = "center";
 searchContainer.style.border = "1px solid #ccc";
 searchContainer.style.borderRadius = "6px";
-searchContainer.style.padding = "2px 6px";
+searchContainer.style.padding = "0 8px"; // padding trên/dưới bằng 0
+searchContainer.style.height = "36px"; // cùng chiều cao với import
 searchContainer.style.background = "#fff";
 
 const searchInput = document.createElement("input");
@@ -107,10 +116,13 @@ searchInput.placeholder = "Tìm theo ID...";
 searchInput.style.border = "none";
 searchInput.style.outline = "none";
 searchInput.style.padding = "4px";
+searchInput.style.height = "100%"; // chiếm toàn bộ chiều cao container
 searchInput.style.width = "100%";
 searchInput.addEventListener("input", (e) => {
   renderRows(e.target.value);
 });
+
+
 
 // Nút xóa input (SVG)
 const clearBtn = document.createElement("button");
@@ -126,7 +138,6 @@ clearBtn.style.height = "24px";
 clearBtn.style.border = "none";
 clearBtn.style.background = "transparent";
 clearBtn.style.cursor = "pointer";
-clearBtn.style.marginLeft = "4px";
 clearBtn.title = "Xóa nhanh";
 clearBtn.addEventListener("click", () => {
   searchInput.value = "";
@@ -148,7 +159,6 @@ keyboardToggle.style.height = "24px";
 keyboardToggle.style.border = "none";
 keyboardToggle.style.background = "transparent";
 keyboardToggle.style.cursor = "pointer";
-keyboardToggle.style.marginLeft = "2px";
 keyboardToggle.title = "Bật/Tắt bàn phím";
 
 searchContainer.appendChild(searchInput);
@@ -288,6 +298,251 @@ keyboard.appendChild(extraRow);
 
 headerTools.appendChild(thTools);
 table.appendChild(headerTools);
+// =========================
+// KHU VỰC TẠO KEY TẮT (v4 - Popup có import Excel đẹp + tùy chọn bỏ dòng đầu)
+// =========================
+const shortcutContainer = document.createElement("div");
+shortcutContainer.style.display = "flex";
+shortcutContainer.style.flexWrap = "wrap";
+shortcutContainer.style.gap = "6px";
+shortcutContainer.style.marginTop = "8px";
+shortcutContainer.style.alignItems = "center";
+
+const addShortcutBtn = document.createElement("button");
+// Thay text thành icon
+addShortcutBtn.innerHTML = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#344054" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="7" cy="17" r="3"/>
+  <line x1="10" y1="14" x2="21" y2="3"/>
+  <line x1="17" y1="3" x2="21" y2="7"/>
+</svg>
+`;
+addShortcutBtn.style.display = "flex";
+addShortcutBtn.style.alignItems = "center";
+addShortcutBtn.style.justifyContent = "center";
+addShortcutBtn.style.width = "24px";
+addShortcutBtn.style.height = "24px";
+addShortcutBtn.style.border = "none";
+addShortcutBtn.style.background = "transparent";
+addShortcutBtn.style.cursor = "pointer";
+addShortcutBtn.title = "Tạo/Import Key";
+searchContainer.appendChild(addShortcutBtn); // đưa vào cạnh input
+
+const shortcuts = [];
+const shortcutList = document.createElement("div");
+shortcutList.style.display = "flex";
+shortcutList.style.flexWrap = "wrap";
+shortcutList.style.gap = "6px";
+shortcutContainer.appendChild(shortcutList);
+
+// Render danh sách phím tắt
+function renderShortcuts() {
+  shortcutList.innerHTML = "";
+  shortcuts.forEach((key, idx) => {
+    const btn = document.createElement("button");
+    btn.textContent = key;
+    btn.style.padding = "6px 10px";
+    btn.style.border = "1px solid #ccc";
+    btn.style.borderRadius = "6px";
+    btn.style.cursor = "pointer";
+    btn.style.background = "#fff";
+    btn.style.fontWeight = "500";
+    btn.style.transition = "0.2s";
+    btn.style.userSelect = "none";
+    btn.title = "Shift + Click để xóa";
+
+    btn.onmouseenter = () => (btn.style.background = "#e9ecef");
+    btn.onmouseleave = () => (btn.style.background = "#fff");
+
+    btn.addEventListener("click", (e) => {
+      if (e.shiftKey) {
+        shortcuts.splice(idx, 1);
+        renderShortcuts();
+      } else {
+        searchInput.value = key;
+        searchInput.dispatchEvent(new Event("input"));
+      }
+    });
+
+    shortcutList.appendChild(btn);
+  });
+}
+
+// Popup nhập hoặc import key
+addShortcutBtn.addEventListener("click", async () => {
+  // Tải thư viện XLSX nếu chưa có
+  if (typeof XLSX === "undefined") {
+    await new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
+  // Overlay nền tối
+  const overlay = document.createElement("div");
+  overlay.style.position = "fixed";
+  overlay.style.top = 0;
+  overlay.style.left = 0;
+  overlay.style.width = "100%";
+  overlay.style.height = "100%";
+  overlay.style.background = "rgba(0,0,0,0.4)";
+  overlay.style.zIndex = 99999999;
+  overlay.style.display = "flex";
+  overlay.style.alignItems = "center";
+  overlay.style.justifyContent = "center";
+
+  // Popup
+  const popup = document.createElement("div");
+  popup.style.background = "#fff";
+  popup.style.padding = "20px";
+  popup.style.borderRadius = "10px";
+  popup.style.boxShadow = "0 4px 12px rgba(0,0,0,0.2)";
+  popup.style.width = "320px";
+  popup.style.textAlign = "center";
+  popup.style.fontFamily = "sans-serif";
+  overlay.appendChild(popup);
+
+  // Tiêu đề
+  const title = document.createElement("h4");
+  title.textContent = "Tạo hoặc import key tắt";
+  title.style.marginBottom = "12px";
+  title.style.fontSize = "16px";
+  title.style.color = "#333";
+  popup.appendChild(title);
+
+  // Ô nhập key
+  const input = document.createElement("input");
+  input.type = "text";
+  input.placeholder = "Nhập key (VD: zalo, ht1...)";
+  input.style.width = "100%";
+  input.style.padding = "8px";
+  input.style.marginBottom = "12px";
+  input.style.border = "1px solid #ccc";
+  input.style.borderRadius = "6px";
+  popup.appendChild(input);
+
+  // Khung import đẹp
+  const importBox = document.createElement("div");
+  importBox.style.border = "2px dashed #ced4da";
+  importBox.style.borderRadius = "8px";
+  importBox.style.padding = "12px";
+  importBox.style.marginBottom = "10px";
+  importBox.style.background = "#f8f9fa";
+  importBox.style.cursor = "pointer";
+  importBox.textContent = "📂 Chọn file Excel để import key";
+  importBox.style.transition = "0.2s";
+  importBox.onmouseenter = () => (importBox.style.background = "#e9ecef");
+  importBox.onmouseleave = () => (importBox.style.background = "#f8f9fa");
+  popup.appendChild(importBox);
+
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = ".xls,.xlsx";
+  fileInput.style.display = "none";
+  importBox.appendChild(fileInput);
+
+  // Checkbox: bỏ qua dòng đầu tiên
+  const checkboxContainer = document.createElement("label");
+  checkboxContainer.style.display = "none";
+  checkboxContainer.style.alignItems = "center";
+  checkboxContainer.style.gap = "6px";
+  checkboxContainer.style.fontSize = "13px";
+  checkboxContainer.style.marginBottom = "14px";
+  checkboxContainer.style.cursor = "pointer";
+
+  const skipHeader = document.createElement("input");
+  skipHeader.type = "checkbox";
+  skipHeader.checked = false;
+  const cbText = document.createElement("span");
+  cbText.textContent = "Bỏ qua dòng đầu tiên (tiêu đề)";
+  checkboxContainer.appendChild(skipHeader);
+  checkboxContainer.appendChild(cbText);
+  popup.appendChild(checkboxContainer);
+
+  // Nút hành động
+  const btnRow = document.createElement("div");
+  btnRow.style.display = "flex";
+  btnRow.style.justifyContent = "center";
+  btnRow.style.gap = "8px";
+  popup.appendChild(btnRow);
+
+  const submitBtn = document.createElement("button");
+  submitBtn.textContent = "Tạo";
+  submitBtn.style.padding = "8px 14px";
+  submitBtn.style.borderRadius = "6px";
+  submitBtn.style.border = "none";
+  submitBtn.style.background = "#0d6efd";
+  submitBtn.style.color = "#fff";
+  submitBtn.style.fontWeight = "600";
+  submitBtn.style.cursor = "pointer";
+  submitBtn.style.transition = "0.2s";
+  submitBtn.onmouseenter = () => (submitBtn.style.background = "#0b5ed7");
+  submitBtn.onmouseleave = () => (submitBtn.style.background = "#0d6efd");
+  btnRow.appendChild(submitBtn);
+
+  const cancelBtn = document.createElement("button");
+  cancelBtn.textContent = "Hủy";
+  cancelBtn.style.padding = "8px 14px";
+  cancelBtn.style.borderRadius = "6px";
+  cancelBtn.style.border = "none";
+  cancelBtn.style.background = "#dee2e6";
+  cancelBtn.style.color = "#000";
+  cancelBtn.style.fontWeight = "600";
+  cancelBtn.style.cursor = "pointer";
+  cancelBtn.style.transition = "0.2s";
+  cancelBtn.onmouseenter = () => (cancelBtn.style.background = "#ced4da");
+  cancelBtn.onmouseleave = () => (cancelBtn.style.background = "#dee2e6");
+  btnRow.appendChild(cancelBtn);
+
+  document.body.appendChild(overlay);
+  input.focus();
+
+  // Xử lý tạo key thủ công
+  function submitKey() {
+    const key = input.value.trim();
+    if (!key) return alert("Vui lòng nhập tên key!");
+    shortcuts.push(key);
+    renderShortcuts();
+    document.body.removeChild(overlay);
+  }
+
+  submitBtn.addEventListener("click", submitKey);
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") submitKey();
+  });
+  cancelBtn.addEventListener("click", () => document.body.removeChild(overlay));
+
+  // Import Excel
+  importBox.addEventListener("click", () => fileInput.click());
+  fileInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const data = new Uint8Array(ev.target.result);
+      const workbook = XLSX.read(data, { type: "array" });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+      json.forEach((row, i) => {
+        const key = row[0]?.toString().trim();
+        if (skipHeader.checked && i === 0) return; // Bỏ dòng đầu nếu được chọn
+        if (key && !shortcuts.includes(key)) shortcuts.push(key);
+      });
+
+      renderShortcuts();
+      document.body.removeChild(overlay);
+    };
+    reader.readAsArrayBuffer(file);
+  });
+});
+
+thTools.appendChild(shortcutContainer);
+renderShortcuts();
+
 
 
 // =========================
