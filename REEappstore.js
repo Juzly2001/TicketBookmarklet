@@ -247,9 +247,10 @@
     // Ghi chú
     const footer = document.createElement("div");
     footer.style.marginTop = "10px";
-    footer.style.fontSize = "12px";
+    footer.style.textAlign = "center";
+    footer.style.fontSize = "8px";
     footer.style.color = "#666";
-    footer.innerText = "Phím tắt: X => Click Submit | Ctrl+Space => Ẩn/hiện";
+    footer.innerText = "Phím tắt:  X => Click Submit | C => Next Review | Ctrl+Space => Ẩn/hiện";
     card.appendChild(footer);
   }
 
@@ -496,6 +497,17 @@
       console.error("triggerBackup error:", e);
     }
   }
+
+  // keydown next review
+  document.addEventListener("keydown", (e) => {
+    // Kiểm tra: nhấn phím 'c' (không cần Ctrl/Shift)
+    if (e.key.toLowerCase() === "c") {
+      // Ngăn chặn hành vi mặc định nếu cần
+      e.preventDefault();
+      // Gọi hàm backup
+      triggerBackup(true);
+    }
+  });
 
   async function startProcessOnce() {
     // nếu đã đạt limit -> dừng
