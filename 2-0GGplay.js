@@ -1,0 +1,191 @@
+javascript:(()=>{
+function initReviewLinksWidget(){
+  const ID="mini-excel-review-links";
+  document.getElementById(ID)?.remove();
+
+  const box=document.createElement("div");
+  box.id=ID;
+  Object.assign(box.style,{
+    position:"fixed",top:"70px",right:"35px",zIndex:999998,
+    background:"#fff",border:"1px solid #e5e7eb",borderRadius:"12px",
+    padding:"12px",width:"800px",maxHeight:"400px",overflowY:"auto",
+    fontSize:"15px",boxShadow:"0 4px 12px rgba(0,0,0,0.1)",
+    fontFamily:"Segoe UI,Roboto,Arial,sans-serif"
+  });
+
+  const header=document.createElement("div");
+  Object.assign(header.style,{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"});
+
+  const title=document.createElement("div");
+  title.textContent="📋 Review Links";
+  Object.assign(title.style,{fontWeight:"bold",fontSize:"24px"});
+
+  const btnArea=document.createElement("div");
+
+  function styleBtn(btn,type="default"){
+    Object.assign(btn.style,{
+      border:"1px solid #d1d5db",background:"#f9fafb",borderRadius:"6px",
+      padding:"6px 12px",cursor:"pointer",fontSize:"14px",marginLeft:"6px"
+    });
+    btn.onmouseenter=()=>btn.style.background=type==="danger"?"#fee2e2":"#f3f4f6";
+    btn.onmouseleave=()=>btn.style.background="#f9fafb";
+  }
+
+  const againBtn=document.createElement("button");
+  againBtn.textContent="Again"; styleBtn(againBtn);
+  const toggleBtn=document.createElement("button");
+  toggleBtn.textContent="Hide"; styleBtn(toggleBtn);
+  const copyAllBtn=document.createElement("button");
+  copyAllBtn.textContent="Copy Links"; styleBtn(copyAllBtn);
+  const scanBtn=document.createElement("button");
+  scanBtn.textContent="Scan"; styleBtn(scanBtn);
+  const submitBtn=document.createElement("button");
+  submitBtn.textContent="Auto Submit"; styleBtn(submitBtn);
+
+  // ✅ Nút mới: Auto Paste All
+  const pasteAllBtn=document.createElement("button");
+  pasteAllBtn.textContent="Auto Paste";
+  styleBtn(pasteAllBtn);
+  btnArea.append(againBtn,toggleBtn,copyAllBtn,scanBtn,pasteAllBtn,submitBtn);
+  header.append(title,btnArea);
+
+  const table=document.createElement("table");
+  Object.assign(table.style,{width:"100%",borderCollapse:"collapse",border:"1px solid #e5e7eb"});
+  const thead=document.createElement("thead"),headRow=document.createElement("tr");
+  ["STT","Link","Delete"].forEach(t=>{
+    const th=document.createElement("th");
+    th.textContent=t;
+    Object.assign(th.style,{border:"1px solid #e5e7eb",padding:"8px",background:"#f9fafb",textAlign:"left",fontWeight:"600"});
+    headRow.appendChild(th)
+  });
+  thead.appendChild(headRow);
+  const tbody=document.createElement("tbody");
+  table.append(thead,tbody);
+  box.append(header,table);
+  document.body.appendChild(box);
+
+  let counter=0,addedLinks=new Set,lastClipboardLink=null;
+
+  function addRow(link){
+    if(addedLinks.has(link))return;
+    addedLinks.add(link); counter++;
+    const row=document.createElement("tr");
+    const td1=document.createElement("td");
+    td1.textContent=counter;
+    Object.assign(td1.style,{border:"1px solid #e5e7eb",padding:"6px",width:"40px",textAlign:"center"});
+    const td2=document.createElement("td");
+    td2.textContent=link;
+    Object.assign(td2.style,{border:"1px solid #e5e7eb",padding:"6px",wordBreak:"break-all"});
+    const td3=document.createElement("td");
+    Object.assign(td3.style,{border:"1px solid #e5e7eb",padding:"6px",textAlign:"center"});
+    const delBtn=document.createElement("button");
+    delBtn.textContent="❌"; styleBtn(delBtn,"danger");
+    delBtn.onclick=()=>{tbody.removeChild(row);addedLinks.delete(link)};
+    td3.appendChild(delBtn);
+    row.append(td1,td2,td3);
+    tbody.appendChild(row);
+  }
+
+  async function captureClipboardLink(waitForNew=!1,oldLink=null){
+    const maxWait=2000;const start=Date.now();let text=null;
+    while(Date.now()-start<maxWait){
+      try{text=await navigator.clipboard.readText();if(text&&text.startsWith("http")&&text!==oldLink)break}catch{}
+      await new Promise(r=>setTimeout(r,150))
+    }
+    if(text&&text.startsWith("http")&&!addedLinks.has(text)){lastClipboardLink=text;addRow(text);return text}
+    return null;
+  }
+
+  async function scanReviewsWithReply(){
+    const reviews=document.querySelectorAll("review");
+    let count=0;
+    for(const rev of reviews){
+      const replyBox=rev.querySelector('textarea[aria-label="Trả lời"]');
+      const shareBtn=rev.querySelector('material-button[debug-id="link-share-button"] button');
+      if(replyBox&&shareBtn){
+        const oldLink=lastClipboardLink;
+        shareBtn.click();
+        const newLink=await captureClipboardLink(!0,oldLink);
+        if(newLink)count++;
+        await new Promise(r=>setTimeout(r,400));
+      }
+    }
+    alert(`✅ Đã quét xong link ${count} review!`);
+  }
+
+  async function autoSubmitReplies(){
+    const reviews=document.querySelectorAll("review");
+    let done=0;
+    for(const rev of reviews){
+      const btn=rev.querySelector('material-button[debug-id="submit-button"] button');
+      if(btn){btn.click();done++;await new Promise(r=>setTimeout(r,300))};
+    }
+    alert(`🚀 Đã "Đăng trả lời" cho ${done} review!`);
+  }
+
+  // ✅ Auto Paste All: dán cả tốt và tệ
+  pasteAllBtn.onclick=()=>{
+    const goodText="Cảm ơn bạn đã yêu mến và dành nhiều lời khen cho Zalopay. Chúng mình sẽ tiếp tục hoàn thiện và nâng cao chất lượng dịch vụ ngày một tốt hơn!";
+    const badText="Chúng mình rất tiếc vì trải nghiệm không tốt của bạn. Bạn vui lòng vào ứng dụng Zalopay >> chọn 'Tài khoản' >> 'Trung tâm hỗ trợ' và cung cấp thông tin liên quan để có thể được hỗ trợ nhanh nhất nhé!";
+    const reviews=document.querySelectorAll("review");
+    let goodCount=0,badCount=0;
+    reviews.forEach(rev=>{
+      const textArea=rev.querySelector('textarea[aria-label="Trả lời"]');
+      if(textArea){
+        const stars=rev.querySelectorAll("material-icon.star-filled").length;
+        const txt=stars>3?goodText:badText;
+        textArea.focus();
+        textArea.value=txt;
+        textArea.dispatchEvent(new Event("input",{bubbles:!0}));
+        textArea.dispatchEvent(new Event("change",{bubbles:!0}));
+        if(stars>3)goodCount++;else badCount++;
+      }
+    });
+    alert(`✅ Đã dán tự động:\n• ${goodCount} phản hồi Tốt\n• ${badCount} phản hồi Tệ`);
+  };
+
+  document.querySelectorAll('material-button[debug-id="link-share-button"] button').forEach(btn=>{
+    const newBtn=btn.cloneNode(!0);
+    btn.parentNode.replaceChild(newBtn,btn);
+    newBtn.addEventListener("click",()=>setTimeout(()=>captureClipboardLink(!1,lastClipboardLink),200));
+  });
+
+  copyAllBtn.onclick=()=>{
+    const links=[...tbody.querySelectorAll("tr td:nth-child(2)")].map(td=>td.textContent.trim());
+    if(links.length){navigator.clipboard.writeText(links.join("\n"));alert("✅ Đã copy tất cả link!")}
+    else alert("⚠️ Không có link nào để copy.");
+  };
+
+  againBtn.onclick=()=>{if(confirm("⚠️ Bạn có chắc muốn làm lại không?")){box.remove();initReviewLinksWidget()}};
+  scanBtn.onclick=scanReviewsWithReply;
+  submitBtn.onclick=autoSubmitReplies;
+  toggleBtn.onclick=()=>toggleWidgets();
+
+  function toggleWidgets(){
+    const el=document.getElementById("mini-excel-review-links");
+    if(el)el.style.display=el.style.display==="none"?"block":"none";
+  }
+
+  function initFloatingToggleBtn(){
+    const BTN_ID="mini-excel-floating-toggle";
+    document.getElementById(BTN_ID)?.remove();
+    const btn=document.createElement("button");
+    btn.id=BTN_ID;
+    btn.textContent="Show";
+    Object.assign(btn.style,{
+      position:"fixed",top:"70px",right:"50px",zIndex:100000, display:"none",
+      background:"#fff",border:"none",borderRadius:"50%",
+      width:"50px",height:"50px",cursor:"pointer",fontSize:"16px",
+      boxShadow:"0 2px 6px rgba(0,0,0,0.2)"
+    });
+    btn.onclick=toggleWidgets;
+    document.body.appendChild(btn);
+  }
+
+  initFloatingToggleBtn();
+  document.addEventListener("keydown",(e)=>{
+    if(e.ctrlKey&&e.code==="Space"){e.preventDefault();toggleWidgets();}
+  });
+}
+initReviewLinksWidget();
+})();
