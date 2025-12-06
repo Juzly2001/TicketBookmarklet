@@ -155,8 +155,8 @@
                   <div class="compact-cell" title="a">Chưa rõ yêu cầu</div>
                   <div class="compact-cell" title="a">None</div>
                   <div class="compact-actions">
-                    <button class="doAction action-btn btn-primary" title="Run">▶ Run</button>
-                    <button class="deleteRow action-btn btn-danger" title="Delete">🗑 Del</button>
+                    <button class="doAction action-btn btn-primary" title="Run">▶</button>
+                    <button class="deleteRow action-btn btn-danger" title="Delete">🗑</button>
                   </div>
                 </div>
               </td>
@@ -168,8 +168,8 @@
                   <div class="compact-cell" title="a">Kiểm tra giao dịch</div>
                   <div class="compact-cell" title="a">None</div>
                   <div class="compact-actions">
-                    <button class="doAction action-btn btn-primary" title="Run">▶ Run</button>
-                    <button class="deleteRow action-btn btn-danger" title="Delete">🗑 Del</button>
+                    <button class="doAction action-btn btn-primary" title="Run">▶</button>
+                    <button class="deleteRow action-btn btn-danger" title="Delete">🗑</button>
                   </div>
                 </div>
               </td>
@@ -181,8 +181,8 @@
                   <div class="compact-cell" title="a">Thể lệ chương trình</div>
                   <div class="compact-cell" title="a">None</div>
                   <div class="compact-actions">
-                    <button class="doAction action-btn btn-primary" title="Run">▶ Run</button>
-                    <button class="deleteRow action-btn btn-danger" title="Delete">🗑 Del</button>
+                    <button class="doAction action-btn btn-primary" title="Run">▶</button>
+                    <button class="deleteRow action-btn btn-danger" title="Delete">🗑</button>
                   </div>
                 </div>
               </td>
@@ -194,8 +194,8 @@
                   <div class="compact-cell" title="a">Tư vấn sử dụng</div>
                   <div class="compact-cell" title="a">None</div>
                   <div class="compact-actions">
-                    <button class="doAction action-btn btn-primary" title="Run">▶ Run</button>
-                    <button class="deleteRow action-btn btn-danger" title="Delete">🗑 Del</button>
+                    <button class="doAction action-btn btn-primary" title="Run">▶</button>
+                    <button class="deleteRow action-btn btn-danger" title="Delete">🗑</button>
                   </div>
                 </div>
               </td>
@@ -207,8 +207,8 @@
                   <div class="compact-cell" title="a">Tư vấn sử dụng</div>
                   <div class="compact-cell" title="a">Pay later</div>
                   <div class="compact-actions">
-                    <button class="doAction action-btn btn-primary" title="Run">▶ Run</button>
-                    <button class="deleteRow action-btn btn-danger" title="Delete">🗑 Del</button>
+                    <button class="doAction action-btn btn-primary" title="Run">▶</button>
+                    <button class="deleteRow action-btn btn-danger" title="Delete">🗑</button>
                   </div>
                 </div>
               </td>
@@ -391,8 +391,8 @@
           <div class="compact-cell" title="${escapeHtml(chiTiet)}">${escapeHtml(chiTiet)}</div>
           <div class="compact-cell" title="${escapeHtml(doiTac)}">${escapeHtml(doiTac)}</div>
           <div class="compact-actions">
-            <button class="doAction action-btn btn-primary" title="Run">▶ Run</button>
-            <button class="deleteRow action-btn btn-danger" title="Delete">🗑 Del</button>
+            <button class="doAction action-btn btn-primary" title="Run">▶</button>
+            <button class="deleteRow action-btn btn-danger" title="Delete">🗑</button>
           </div>
         </div>
       </td>
