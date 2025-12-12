@@ -176,6 +176,7 @@ function initReviewLinksWidget(){
   pasteAllBtn.onclick=()=>{
     const goodText="Cảm ơn bạn đã yêu mến và dành nhiều lời khen cho Zalopay. Chúng mình sẽ tiếp tục hoàn thiện và nâng cao chất lượng dịch vụ ngày một tốt hơn!";
     const badText="Chúng mình rất tiếc vì trải nghiệm không tốt của bạn. Bạn vui lòng vào ứng dụng Zalopay >> chọn 'Tài khoản' >> 'Trung tâm hỗ trợ' và cung cấp thông tin liên quan để có thể được hỗ trợ nhanh nhất nhé!";
+
     const reviews=document.querySelectorAll("review");
     let goodCount=0,badCount=0;
 
@@ -184,9 +185,13 @@ function initReviewLinksWidget(){
       if(textArea){
         const stars=rev.querySelectorAll("material-icon.star-filled").length;
         const txt=stars>3?goodText:badText;
-        textArea.value=txt;
-        textArea.dispatchEvent(new Event("input",{bubbles:true}));
-        textArea.dispatchEvent(new Event("change",{bubbles:true}));
+
+        textArea.focus(); // 👈 BẮT BUỘC
+        textArea.value = txt;
+
+        textArea.dispatchEvent(new Event("input", { bubbles: true, cancelable: true, composed: true }));
+        textArea.dispatchEvent(new Event("change", { bubbles: true }));
+
         if(stars>3)goodCount++; else badCount++;
       }
     });
