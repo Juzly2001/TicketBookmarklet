@@ -358,12 +358,28 @@
     }
     if (pendingTimeout) pendingTimeout = null;
     if (countdownTextEl) countdownTextEl.style.display = "none";
+    // clear fallback & submitReadyChecker
+    if (fallbackTimer) {
+      clearTimeout(fallbackTimer);
+      fallbackTimer = null;
+    }
+    if (submitReadyChecker) {
+      clearInterval(submitReadyChecker);
+      submitReadyChecker = null;
+    }
+    // reset currentReview
+    currentReview = null;
+    // reset start button text for clarity
+    const startBtn = document.getElementById("__autoReply_start");
+    if (startBtn) startBtn.innerText = "🔍 Bắt đầu trả lời tuần tự";
     // thông báo (theo lựa chọn bạn muốn 2A = tự động dừng + hiện thông báo)
     if (reason && typeof reason === "string") {
       alert(reason);
     }
     // Cập nhật status
     if (statusTextEl) statusTextEl.innerText = "⏹️ Tự động đã dừng";
+    // update count UI if present
+    updateCountUI();
   }
 
   const countedReviews = new WeakSet();
@@ -518,7 +534,8 @@
 
     const target = findNextUnreplied();
     if (!target) {
-      alert("🎉 Tất cả review đã được phản hồi!");
+      // Khi không còn review chưa trả lời -> tự tắt auto mode
+      stopAllAuto("🎉 Tất cả review đã được phản hồi — Tự động tắt.");
       return;
     }
     currentReview = target;
@@ -661,23 +678,23 @@
         countdownTimer = setInterval(() => {
           remain--;
           if (remain > 0) {
-            if (countdownTextEl) countdownTextEl.innerText = `🕒 Auto submit sau ${remain}s`;
-          } else {
-            clearInterval(countdownTimer);
+                if (countdownTextEl) countdownTextEl.innerText = `🕒 Auto submit sau ${remain}s`;
+              } else {
+                clearInterval(countdownTimer);
+              }
+            }, 1000);
+
+            pendingTimeout = setTimeout(() => {
+              if (autoSubmitOn && !submitBtn.disabled) {
+                submitBtn.click();
+                playBeep();
+              }
+              pendingTimeout = null;
+              if (countdownTextEl) countdownTextEl.style.display = "none";
+            }, randomDelay);
           }
         }, 1000);
-
-        pendingTimeout = setTimeout(() => {
-          if (autoSubmitOn && !submitBtn.disabled) {
-            submitBtn.click();
-            playBeep();
-          }
-          pendingTimeout = null;
-          if (countdownTextEl) countdownTextEl.style.display = "none";
-        }, randomDelay);
       }
-    }, 1000);
-  }
 }
 
 if (autoBtnEl) {

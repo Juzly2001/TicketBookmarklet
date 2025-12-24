@@ -151,9 +151,9 @@
             <tr>
               <td colspan="3">
                 <div class="compact-row">
-                  <div class="compact-cell" title="a">Others</div>
-                  <div class="compact-cell" title="a">Chưa rõ yêu cầu</div>
-                  <div class="compact-cell" title="a">None</div>
+                  <div class="compact-cell" >Others</div>
+                  <div class="compact-cell" >Chưa rõ yêu cầu</div>
+                  <div class="compact-cell" >None</div>
                   <div class="compact-actions">
                     <button class="doAction action-btn btn-primary" title="Run">▶</button>
                     <button class="deleteRow action-btn btn-danger" title="Delete">🗑</button>
@@ -164,9 +164,9 @@
             <tr>
               <td colspan="3">
                 <div class="compact-row">
-                  <div class="compact-cell" title="a">Thanh toán</div>
-                  <div class="compact-cell" title="a">Kiểm tra giao dịch</div>
-                  <div class="compact-cell" title="a">None</div>
+                  <div class="compact-cell" >Thanh toán</div>
+                  <div class="compact-cell" >Kiểm tra giao dịch</div>
+                  <div class="compact-cell" >None</div>
                   <div class="compact-actions">
                     <button class="doAction action-btn btn-primary" title="Run">▶</button>
                     <button class="deleteRow action-btn btn-danger" title="Delete">🗑</button>
@@ -177,9 +177,9 @@
             <tr>
               <td colspan="3">
                 <div class="compact-row">
-                  <div class="compact-cell" title="a">Khuyến mãi</div>
-                  <div class="compact-cell" title="a">Thể lệ chương trình</div>
-                  <div class="compact-cell" title="a">None</div>
+                  <div class="compact-cell" >Khuyến mãi</div>
+                  <div class="compact-cell" >Thể lệ chương trình</div>
+                  <div class="compact-cell" >None</div>
                   <div class="compact-actions">
                     <button class="doAction action-btn btn-primary" title="Run">▶</button>
                     <button class="deleteRow action-btn btn-danger" title="Delete">🗑</button>
@@ -190,9 +190,9 @@
             <tr>
               <td colspan="3">
                 <div class="compact-row">
-                  <div class="compact-cell" title="a">Tài khoản</div>
-                  <div class="compact-cell" title="a">Tư vấn sử dụng</div>
-                  <div class="compact-cell" title="a">None</div>
+                  <div class="compact-cell" >Tài khoản</div>
+                  <div class="compact-cell" >Tư vấn sử dụng</div>
+                  <div class="compact-cell" >None</div>
                   <div class="compact-actions">
                     <button class="doAction action-btn btn-primary" title="Run">▶</button>
                     <button class="deleteRow action-btn btn-danger" title="Delete">🗑</button>
@@ -203,9 +203,9 @@
             <tr>
               <td colspan="3">
                 <div class="compact-row">
-                  <div class="compact-cell" title="a">Tài khoản</div>
-                  <div class="compact-cell" title="a">Tư vấn sử dụng</div>
-                  <div class="compact-cell" title="a">Pay later</div>
+                  <div class="compact-cell" >Tài khoản</div>
+                  <div class="compact-cell" >Tư vấn sử dụng</div>
+                  <div class="compact-cell" >Pay later</div>
                   <div class="compact-actions">
                     <button class="doAction action-btn btn-primary" title="Run">▶</button>
                     <button class="deleteRow action-btn btn-danger" title="Delete">🗑</button>
@@ -524,6 +524,28 @@
       updateTbodyHeight();
     }
   });
+
+  // ==========================
+// PATCH: click compact-row to trigger doAction
+// ==========================
+box.addEventListener("click", e => {
+  const compactRow = e.target.closest(".compact-row");
+  if (!compactRow) return;
+
+  // ❌ nếu click vào các nút thì để logic cũ xử lý
+  if (
+    e.target.closest(".deleteRow") ||
+    e.target.closest(".saveRow") ||
+    e.target.closest(".doAction")
+  ) return;
+
+  // 👉 click vào row = click nút ▶
+  const actionBtn = compactRow.querySelector(".doAction");
+  if (actionBtn) {
+    actionBtn.click();
+  }
+});
+
 
   // ==========================
   // Ctrl+X to toggle panel
