@@ -186,6 +186,7 @@
         fontSize: "13px",
         marginTop: "8px",
         width: "100%",
+        display: "none"
       });
       card.appendChild(autoSubmitBtn);
 
@@ -379,6 +380,9 @@
       // Cập nhật status
       if (statusTextEl) statusTextEl.innerText = "⏹️ Tự động đã dừng";
       // update count UI if present
+      const delayInput = document.getElementById("__autoReply_delayInput");
+      if (delayInput) delayInput.style.display = "none";
+
       updateCountUI();
     }
 
@@ -826,6 +830,19 @@
         root.style.display = isHidden ? "flex" : "none";
       }
     });
+    // 🔑 Phím tắt V: bật / tắt Auto Mode
+    document.addEventListener("keydown", (e) => {
+      if (e.key.toLowerCase() === "v") {
+        // tránh bấm khi đang gõ trong input / textarea
+        const tag = document.activeElement?.tagName?.toLowerCase();
+        if (tag === "input" || tag === "textarea") return;
+
+        e.preventDefault();
+        const autoBtn = document.getElementById("__autoReply_autoMode");
+        if (autoBtn) autoBtn.click();
+      }
+    });
+
 
     // khởi tạo hiển thị counter
     updateCountUI();
