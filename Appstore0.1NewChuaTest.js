@@ -77,7 +77,7 @@
       header.appendChild(title);
       const countText = document.createElement("div");
       countText.id = "__autoReply_countStatus";
-      countText.innerText = `✅ Đã rep: ${formatLimitText()}`;
+      countText.innerText = `✅ Replied: ${formatLimitText()}`;
       Object.assign(countText.style, {
         fontSize: "13px",
         fontWeight: "600",
@@ -96,7 +96,7 @@
       // Nút chính
       const startBtn = document.createElement("button");
       startBtn.id = "__autoReply_start";
-      startBtn.innerText = "🔍 Bắt đầu trả lời tuần tự";
+      startBtn.innerText = "🔍 Start reply.";
       Object.assign(startBtn.style, {
         gridColumn: "1 / span 2",
         padding: "10px",
@@ -114,7 +114,7 @@
       // 2 nút nhỏ
       const btnSubmit = document.createElement("button");
       btnSubmit.id = "__autoReply_clickSubmit";
-      btnSubmit.innerText = "▶️ Click Submit";
+      btnSubmit.innerText = "▶️ Click Submit (Q)";
       Object.assign(btnSubmit.style, {
         padding: "8px",
         background: "#00b67a",
@@ -128,7 +128,7 @@
 
       const btnNext = document.createElement("button");
       btnNext.id = "__autoReply_backup";
-      btnNext.innerText = "⏭️ Next Review";
+      btnNext.innerText = "⏭️ Next Review (W)";
       Object.assign(btnNext.style, {
         padding: "8px",
         background: "#ff6b6b",
@@ -150,7 +150,7 @@
 
       const autoBtn = document.createElement("button");
       autoBtn.id = "__autoReply_autoMode";
-      autoBtn.innerText = "⚪ Tự động: TẮT";
+      autoBtn.innerText = "⚪ Auto (E): OFF";
       Object.assign(autoBtn.style, {
         padding: "8px",
         background: "#6c757d",
@@ -163,7 +163,7 @@
 
       const soundBtn = document.createElement("button");
       soundBtn.id = "__autoReply_sound";
-      soundBtn.innerText = "🔇 Âm báo: TẮT";
+      soundBtn.innerText = "🔇 Sound: OFF";
       Object.assign(soundBtn.style, {
         padding: "8px",
         background: "#6c757d",
@@ -176,7 +176,7 @@
 
       const autoSubmitBtn = document.createElement("button");
       autoSubmitBtn.id = "__autoReply_autoSubmit";
-      autoSubmitBtn.innerText = "⚪ Auto Submit: TẮT";
+      autoSubmitBtn.innerText = "⚪ Auto Submit: OFF";
       Object.assign(autoSubmitBtn.style, {
         padding: "8px",
         background: "#6c757d",
@@ -186,6 +186,7 @@
         fontSize: "13px",
         marginTop: "8px",
         width: "100%",
+        display: "none"
       });
       card.appendChild(autoSubmitBtn);
 
@@ -212,7 +213,7 @@
       // Giới hạn rep (giao diện giống auto submit)
           const limitToggle = document.createElement("button");
           limitToggle.id = "__autoReply_limitToggle";
-          limitToggle.innerText = "⚪ Giới hạn: TẮT";
+          limitToggle.innerText = "⚪ Limit: OFF";
           Object.assign(limitToggle.style, {
           padding: "8px",
           background: "#6c757d",
@@ -248,9 +249,9 @@
       const footer = document.createElement("div");
       footer.style.marginTop = "10px";
       footer.style.textAlign = "center";
-      footer.style.fontSize = "8px";
+      footer.style.fontSize = "12px";
       footer.style.color = "#666";
-      footer.innerText = "Phím tắt:  X => Click Submit | C => Next Review | Ctrl+Space => Ẩn/hiện";
+      footer.innerText = "Ctrl+Space => Ẩn/hiện";
       card.appendChild(footer);
     }
 
@@ -268,7 +269,7 @@
     const limitInputEl = document.getElementById("__autoReply_limitInput");
 
     function updateCountUI() {
-      if (countStatusEl) countStatusEl.innerText = `✅ Đã rep: ${formatLimitText()}`;
+      if (countStatusEl) countStatusEl.innerText = `✅ Replied: ${formatLimitText()}`;
     }
 
     // cập nhật limit từ input
@@ -285,7 +286,7 @@
     if (limitToggleEl) {
     limitToggleEl.onclick = () => {
       limitEnabled = !limitEnabled;
-      limitToggleEl.innerText = limitEnabled ? "🟢 Giới hạn: BẬT" : "⚪ Giới hạn: TẮT";
+      limitToggleEl.innerText = limitEnabled ? "🟢 Limit: ON" : "⚪ Limit: OFF";
       limitToggleEl.style.background = limitEnabled ? "#28a745" : "#6c757d";
       if (limitInputEl) limitInputEl.style.display = limitEnabled ? "block" : "none";
       updateCountUI();
@@ -336,12 +337,12 @@
       // Dừng mọi chế độ auto và clear timers
       autoMode = false;
       if (autoBtnEl) {
-        autoBtnEl.innerText = "⚪ Tự động: TẮT";
+        autoBtnEl.innerText = "⚪ Auto (E): OFF";
         autoBtnEl.style.background = "#6c757d";
       }
       autoSubmitOn = false;
       if (autoSubmitBtnEl) {
-        autoSubmitBtnEl.innerText = "⚪ Auto Submit: TẮT";
+        autoSubmitBtnEl.innerText = "⚪ Auto Submit: OFF";
         autoSubmitBtnEl.style.background = "#6c757d";
       }
       if (checkInterval) {
@@ -371,14 +372,17 @@
       currentReview = null;
       // reset start button text for clarity
       const startBtn = document.getElementById("__autoReply_start");
-      if (startBtn) startBtn.innerText = "🔍 Bắt đầu trả lời tuần tự";
+      if (startBtn) startBtn.innerText = "🔍 Start reply.";
       // thông báo (theo lựa chọn bạn muốn 2A = tự động dừng + hiện thông báo)
       if (reason && typeof reason === "string") {
         alert(reason);
       }
       // Cập nhật status
-      if (statusTextEl) statusTextEl.innerText = "⏹️ Tự động đã dừng";
+      if (statusTextEl) statusTextEl.innerText = "⏹️ Stop Auto";
       // update count UI if present
+      const delayInput = document.getElementById("__autoReply_delayInput");
+      if (delayInput) delayInput.style.display = "none";
+
       updateCountUI();
     }
 
@@ -450,7 +454,7 @@
         }
         // cập nhật start button trạng thái
         const startBtn = document.getElementById("__autoReply_start");
-        if (startBtn) startBtn.innerText = "➡️ Backup chuyển sang review kế tiếp";
+        if (startBtn) startBtn.innerText = "➡️ Backup ~ Find next reply.";
 
         // scroll và click
         target.el.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -502,7 +506,7 @@
           }, FALLBACK_TIMEOUT_MS);
 
           waitForResponseUpdate(async () => {
-            if (startBtn) startBtn.innerText = "➡️ Sang review kế tiếp";
+            if (startBtn) startBtn.innerText = "➡️ Find next reply.";
             if (autoMode) {
               await delay(1000);
               startProcessOnce();
@@ -514,28 +518,17 @@
       }
     }
 
-    // keydown next review
-    document.addEventListener("keydown", (e) => {
-      // Kiểm tra: nhấn phím 'c' (không cần Ctrl/Shift)
-      if (e.key.toLowerCase() === "c") {
-        // Ngăn chặn hành vi mặc định nếu cần
-        e.preventDefault();
-        // Gọi hàm backup
-        triggerBackup(true);
-      }
-    });
-
     async function startProcessOnce() {
       // nếu đã đạt limit -> dừng
       if (limitEnabled && repliedCount >= replyLimit) {
-        stopAllAuto(`🎯 Đã đạt giới hạn ${replyLimit} review — Tự động tắt.`);
+        stopAllAuto(`🎯 Đã đạt giới hạn ${replyLimit} review — Tự động OFF.`);
         return;
       }
 
       const target = findNextUnreplied();
       if (!target) {
-        // Khi không còn review chưa trả lời -> tự tắt auto mode
-        stopAllAuto("🎉 Tất cả review đã được phản hồi — Tự động tắt.");
+        // Khi không còn review chưa trả lời -> tự OFF auto mode
+        stopAllAuto("🎉 Tất cả review đã được phản hồi — Tự động OFF.");
         return;
       }
       currentReview = target;
@@ -596,7 +589,7 @@
       }, FALLBACK_TIMEOUT_MS);
 
       waitForResponseUpdate(async () => {
-        if (startBtn) startBtn.innerText = "➡️ Sang review kế tiếp";
+        if (startBtn) startBtn.innerText = "➡️ Find next reply.";
         if (autoMode) {
           await delay(1000);
           startProcessOnce();
@@ -623,7 +616,7 @@
         return alert("Nút Submit hiện đang bị vô hiệu hóa.");
       submitBtn.click();
       const startBtn = document.getElementById("__autoReply_start");
-      if (startBtn) startBtn.innerText = "⏳ Đang đợi phản hồi được lưu...";
+      if (startBtn) startBtn.innerText = "⏳ Waiting for reply to be saved...";
     }
     if (submitHelperEl) {
       submitHelperEl.onclick = clickSubmitAction;
@@ -636,12 +629,7 @@
       };
     }
 
-    document.addEventListener("keydown", e => {
-      if (e.key.toLowerCase() === "x") {
-        e.preventDefault();
-        clickSubmitAction();
-      }
-    });
+
 
       /* === 🧠 AUTO SUBMIT: delay ngẫu nhiên từ 0 đến số nhập === */
     let autoSubmitOn = false;
@@ -652,7 +640,7 @@
     function enableAutoSubmitProgrammatically() {
     if (!autoSubmitOn) {
       autoSubmitOn = true;
-      autoSubmitBtnEl.innerText = "🟢 Auto Submit: BẬT";
+      autoSubmitBtnEl.innerText = "🟢 Auto Submit: ON";
       autoSubmitBtnEl.style.background = "#28a745";
       const delayInput = document.getElementById("__autoReply_delayInput");
       if (delayInput) delayInput.style.display = "block";
@@ -700,25 +688,25 @@
   if (autoBtnEl) {
     autoBtnEl.onclick = () => {
       autoMode = !autoMode;
-      autoBtnEl.innerText = autoMode ? "🟢 Tự động: BẬT" : "⚪ Tự động: TẮT";
+      autoBtnEl.innerText = autoMode ? "🟢 Auto (E): ON" : "⚪ Auto (E): OFF";
       autoBtnEl.style.background = autoMode ? "#28a745" : "#6c757d";
 
-      // ✅ Khi bật autoMode, autoSubmitOn cũng tự bật
+      // ✅ Khi ON autoMode, autoSubmitOn cũng tự ON
       if (autoMode && !autoSubmitOn) {
     enableAutoSubmitProgrammatically();
   }
 
-      // nếu bật autoMode, bắt đầu quy trình nếu có review
+      // nếu ON autoMode, bắt đầu quy trình nếu có review
       if (autoMode) {
         if (limitEnabled && repliedCount >= replyLimit) {
-          stopAllAuto(`🎯 Đã đạt giới hạn ${replyLimit} review – Tự động tắt.`);
+          stopAllAuto(`🎯 Đã đạt giới hạn ${replyLimit} review – Tự động OFF.`);
           return;
         }
         startProcessOnce();
       } else {
-        // khi tắt autoMode thì tắt luôn autoSubmit
+        // khi OFF autoMode thì OFF luôn autoSubmit
         autoSubmitOn = false;
-        autoSubmitBtnEl.innerText = "⚪ Auto Submit: TẮT";
+        autoSubmitBtnEl.innerText = "⚪ Auto Submit: OFF";
         autoSubmitBtnEl.style.background = "#6c757d";
         const delayInput = document.getElementById("__autoReply_delayInput");
         if (delayInput) delayInput.style.display = "none";
@@ -731,7 +719,7 @@
     if (soundBtnEl) {
       soundBtnEl.onclick = () => {
         soundOn = !soundOn;
-        soundBtnEl.innerText = soundOn ? "🔊 Âm báo: BẬT" : "🔇 Âm báo: TẮT";
+        soundBtnEl.innerText = soundOn ? "🔊 Sound: ON" : "🔇 Sound: OFF";
         soundBtnEl.style.background = soundOn ? "#17a2b8" : "#6c757d";
         if (soundOn) playBeep();
       };
@@ -742,8 +730,8 @@
       autoSubmitBtnEl.onclick = () => {
         autoSubmitOn = !autoSubmitOn;
         autoSubmitBtnEl.innerText = autoSubmitOn
-          ? "🟢 Auto Submit: BẬT"
-          : "⚪ Auto Submit: TẮT";
+          ? "🟢 Auto Submit: ON"
+          : "⚪ Auto Submit: OFF";
         autoSubmitBtnEl.style.background = autoSubmitOn ? "#28a745" : "#6c757d";
 
         // dùng element đã chèn ngay dưới nút Auto Submit
@@ -817,7 +805,34 @@
       return el;
     })();
 
-    document.addEventListener("keydown", e => {
+    // 🔑 Phím OFF V: ON / OFF Auto Mode
+    document.addEventListener("keydown", (e) => {
+      // Keydown click submit
+      if (e.key.toLowerCase() === "q") {
+        e.preventDefault();
+        clickSubmitAction();
+      }
+
+      // Keydown next review
+      if (e.key.toLowerCase() === "w" || e.key.toLowerCase() === "ư") {
+        // Ngăn chặn hành vi mặc định nếu cần
+        e.preventDefault();
+        // Gọi hàm backup
+        triggerBackup(true);
+      }
+
+      // Keydown auto
+      if (e.key.toLowerCase() === "e") {
+        // tránh bấm khi đang gõ trong input / textarea
+        const tag = document.activeElement?.tagName?.toLowerCase();
+        if (tag === "input" || tag === "textarea") return;
+
+        e.preventDefault();
+        const autoBtn = document.getElementById("__autoReply_autoMode");
+        if (autoBtn) autoBtn.click();
+      }
+
+      // Keydown show/hide
       if (e.ctrlKey && e.code === "Space") {
         e.preventDefault();
         const root = document.getElementById("__autoReply_root");
@@ -826,6 +841,7 @@
         root.style.display = isHidden ? "flex" : "none";
       }
     });
+
 
     // khởi tạo hiển thị counter
     updateCountUI();
