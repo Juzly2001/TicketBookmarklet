@@ -1,14 +1,24 @@
-// Appstore
-javascript:(function(){var old=document.getElementById("rfreshchat-script");if(old)old.remove();var s=document.createElement("script");s.id="rfreshchat-script";s.src="https://cdn.jsdelivr.net/gh/Juzly2001/TicketBookmarklet@master/REEappstore.js?v="+Date.now();s.onload=function(){console.log("✅ appstore.js loaded fresh!")};document.body.appendChild(s)})();
+javascript:(function() {
+    var scripts = [
+        // Có thể thêm nhiều link
+        "https://cdn.jsdelivr.net/gh/Juzly2001/TicketBookmarklet@master/REEappstore.js",
+    ];
 
-// Workload
-javascript:(async function() {  const url = "https://cdn.jsdelivr.net/gh/Juzly2001/TicketBookmarklet@master/Workload.js?v=" + Date.now();  try {    const js = await (await fetch(url)).text();    eval(js);  } catch (e) {    alert("❌ Không thể tải script: " + e);  }})();
+    scripts.forEach(function(url, index) {
+        var s = document.createElement("script");
+        s.id = "custom-script-" + index;
+        s.src = url + "?v=" + Date.now();
+        s.onload = function() {
+            console.log("✅ Script loaded: " + url);
+        };
+        s.onerror = function() {
+            console.error("❌ Failed to load: " + url);
+        };
+        document.body.appendChild(s);
+    });
+})();
 
-// Ticket
-javascript:(function(){var old=document.getElementById("rfreshchat-script");if(old)old.remove();var s=document.createElement("script");s.id="rfreshchat-script";s.src="https://cdn.jsdelivr.net/gh/Juzly2001/TicketBookmarklet@master/new.js?v="+Date.now();s.onload=function(){console.log("✅ new.js loaded fresh!")};s.onerror=function(e){console.error("❌ Load failed",e)};(document.body||document.head||document.documentElement).appendChild(s)})();
 
-// Fresh
-javascript:(function(){var old=document.getElementById("rfreshchat-script");if(old)old.remove();var s=document.createElement("script");s.id="rfreshchat-script";s.src="https://cdn.jsdelivr.net/gh/Juzly2001/TicketBookmarklet@master/RFreshchat.js?v="+Date.now();s.onload=function(){console.log("✅ RFreshchat.js loaded fresh!")};document.body.appendChild(s)})();
 
 // GG-Play
 javascript:(()=>{window.onbeforeunload=()=>!0;function initReviewLinksWidget(){const ID="mini-excel-review-links";document.getElementById(ID)?.remove();const box=document.createElement("div");box.id=ID;Object.assign(box.style,{position:"fixed",top:"70px",right:"35px",zIndex:999998,background:"#fff",border:"1px solid #e5e7eb",borderRadius:"12px",padding:"12px",width:"800px",fontSize:"15px",boxShadow:"0 4px 12px rgba(0,0,0,0.1)",fontFamily:"Segoe UI,Roboto,Arial,sans-serif"});const header=document.createElement("div");Object.assign(header.style,{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"});const title=document.createElement("div");title.textContent="📋 Review Links";Object.assign(title.style,{fontWeight:"bold",fontSize:"24px"});const btnArea=document.createElement("div");function styleBtn(btn,type="default"){Object.assign(btn.style,{border:"1px solid #d1d5db",background:"#f9fafb",borderRadius:"6px",padding:"6px 12px",cursor:"pointer",fontSize:"14px",marginLeft:"6px"});btn.onmouseenter=()=>btn.style.background=type==="danger"?"#fee2e2":"#f3f4f6";btn.onmouseleave=()=>btn.style.background="#f9fafb"}
@@ -25,3 +35,5 @@ pasteAllBtn.onclick=()=>{const goodText="Cảm ơn bạn đã yêu mến và dà
 function initFloatingToggleBtn(){const BTN_ID="mini-excel-floating-toggle";document.getElementById(BTN_ID)?.remove();const btn=document.createElement("button");btn.id=BTN_ID;btn.textContent="Show";Object.assign(btn.style,{position:"fixed",top:"70px",right:"50px",zIndex:100000,display:"none",background:"#fff",border:"none",borderRadius:"50%",width:"50px",height:"50px",cursor:"pointer",fontSize:"16px",boxShadow:"0 2px 6px rgba(0,0,0,0.2)"});btn.onclick=toggleWidgets;document.body.appendChild(btn)}
 initFloatingToggleBtn();document.addEventListener("keydown",(e)=>{if(e.ctrlKey&&e.code==="Space"){e.preventDefault();toggleWidgets()}})}
 initReviewLinksWidget()})()
+
+
