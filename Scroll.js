@@ -24,7 +24,7 @@
   // Tạo button
   const btnScroll = document.createElement("button");
   btnScroll.id = BTN_ID;
-  btnScroll.innerText = "▶️ Auto Scroll: TẮT";
+  btnScroll.innerText = "▶️ Auto Scroll (S): TẮT";
 
   Object.assign(btnScroll.style, {
     position: "fixed",
@@ -46,11 +46,11 @@
     isOn = !isOn;
     if (isOn) {
       startScroll();
-      btnScroll.innerText = "⏹️ Auto Scroll: BẬT";
+      btnScroll.innerText = "⏹️ Auto Scroll (S): BẬT";
       btnScroll.style.background = "#28a745";
     } else {
       stopScroll();
-      btnScroll.innerText = "▶️ Auto Scroll: TẮT";
+      btnScroll.innerText = "▶️ Auto Scroll (S): TẮT";
       btnScroll.style.background = "#6c757d";
     }
   }
