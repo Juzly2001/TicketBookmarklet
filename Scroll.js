@@ -24,7 +24,7 @@
   // Tạo button
   const btnScroll = document.createElement("button");
   btnScroll.id = BTN_ID;
-  btnScroll.innerText = "▶️ Auto Scroll (S): TẮT";
+  btnScroll.innerText = "▶️ Auto Scroll (S): OFF";
 
   Object.assign(btnScroll.style, {
     position: "fixed",
@@ -46,11 +46,11 @@
     isOn = !isOn;
     if (isOn) {
       startScroll();
-      btnScroll.innerText = "⏹️ Auto Scroll (S): BẬT";
+      btnScroll.innerText = "⏹️ Auto Scroll (S): ON";
       btnScroll.style.background = "#28a745";
     } else {
       stopScroll();
-      btnScroll.innerText = "▶️ Auto Scroll (S): TẮT";
+      btnScroll.innerText = "▶️ Auto Scroll (S): OFF";
       btnScroll.style.background = "#6c757d";
     }
   }
@@ -59,7 +59,7 @@
 
   // Lắng nghe phím
   document.addEventListener("keydown", (e) => {
-    // Phím S để bật/tắt auto scroll
+    // Phím S để ON/OFF auto scroll
     if (e.key.toLowerCase() === "s" && !e.ctrlKey && !e.altKey && !e.shiftKey) {
       e.preventDefault();
       toggleScroll();
