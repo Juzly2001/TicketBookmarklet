@@ -251,7 +251,7 @@
       footer.style.textAlign = "center";
       footer.style.fontSize = "12px";
       footer.style.color = "#666";
-      footer.innerText = "Ctrl+Space => Ẩn/hiện";
+      footer.innerText = "Ctrl+Space => Show/Hide";
       card.appendChild(footer);
     }
 
