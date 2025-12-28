@@ -75,11 +75,11 @@ javascript:(function () {
   headerBar.appendChild(btnGroup);
   container.appendChild(headerBar);
 
-  // Delay
+  // Input Delay
   const delayWrap = document.createElement("div");
   delayWrap.style = "padding:6px;background:#f3f4f6;border-bottom:1px solid #ddd";
   delayWrap.innerHTML =
-    'Delay (s): <input id="miniDelay" type="number" value="2" style="width:50px">';
+    'Delay (s): <input id="miniDelay" type="number" value="1" style="width:50px">';
   container.appendChild(delayWrap);
 
   // Status bar
