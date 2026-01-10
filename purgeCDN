@@ -1,4 +1,4 @@
-https://purge.jsdelivr.net/gh/Juzly2001/TicketBookmarklet@master/ticketMobile.js
+https://purge.jsdelivr.net/gh/Juzly2001/TicketBookmarklet@master/Scroll.js
 
 
 javascript:(function(){var old=document.getElementById("rfreshchat-script");if(old)old.remove();var s=document.createElement("script");s.id="rfreshchat-script";s.src="https://cdn.jsdelivr.net/gh/Juzly2001/TicketBookmarklet@master/ticketMobile.js?v="+Date.now();s.onload=function(){console.log("✅ new.js loaded fresh!")};s.onerror=function(e){console.error("❌ Load failed",e)};(document.body||document.head||document.documentElement).appendChild(s)})();
