@@ -63,10 +63,10 @@ box.style.cssText = `
     box-shadow:0 6px 18px rgba(0,0,0,0.2);
     font-family:Segoe UI, Arial, sans-serif;
     font-size:13px;
-    min-width:560px;
-    min-height:200px;
-    width:560px;     /* bắt buộc width */
-    height:200px;    /* bắt buộc height */
+    min-width:640px;
+    min-height:340px;
+    width:640px;     /* bắt buộc width */
+    height:340px;    /* bắt buộc height */
     box-sizing:border-box;  /* ✅ quan trọng */
     transition:all .2s ease;
     resize:both;
@@ -96,18 +96,20 @@ box.style.cssText = `
       <div id="mini-excel-scroll">
         <table id="mini-excel-table" style="width:100%;border-collapse:collapse;table-layout:fixed;">
           <colgroup>
-            <col style="width:32%;">
-            <col style="width:24%;">
+            <col style="width:26%;">
             <col style="width:22%;">
-            <col style="width:11%;">
-            <col style="width:11%;">
+            <col style="width:18%;">
+            <col style="width:18%;"> <!-- GROUP -->
+            <col style="width:8%;">
+            <col style="width:8%;">
           </colgroup>
           <thead>
             <tr>
               <th style="padding:6px;border:1px solid #ccc;text-align:left;">YÊU CẦU</th>
               <th style="padding:6px;border:1px solid #ccc;text-align:left;">CHI TIẾT VẤN ĐỀ</th>
               <th style="padding:6px;border:1px solid #ccc;text-align:left;">ĐỐI TÁC</th>
-              <th style="padding:6px;border:1px solid #ccc;text-align:center;">Action</th>
+              <th style="padding:6px;border:1px solid #ccc;text-align:left;">GROUP</th>
+              <th style="padding:6px;border:1px solid #ccc;text-align:center;">Do</th>
               <th style="padding:6px;border:1px solid #ccc;text-align:center;">Del</th>
             </tr>
           </thead>
@@ -116,6 +118,7 @@ box.style.cssText = `
               <td style="border:1px solid #ccc;padding:4px;"><input value="Others"></td>
               <td style="border:1px solid #ccc;padding:4px;"><input value="No support"></td>
               <td style="border:1px solid #ccc;padding:4px;"><input value="None"></td>
+              <td style="border:1px solid #ccc;padding:4px;"><input value="Fanpage"></td>
               <td style="border:1px solid #ccc;text-align:center;"><button class="doAction" style="padding:4px 8px;border-radius:4px;border:1px solid #4285f4;background:#4285f4;color:#fff;cursor:pointer;">▶</button></td>
               <td style="border:1px solid #ccc;text-align:center;"><button class="deleteRow" style="padding:4px 8px;border-radius:4px;border:1px solid #d33;background:#d33;color:#fff;cursor:pointer;">🗑️</button></td>
             </tr>
@@ -133,7 +136,7 @@ box.style.cssText = `
         <input id="subjectInput" style="width:150px;padding:4px;border:1px solid #bbb;border-radius:5px;" value="PhuongNt32">
       </label>
       <label>Chiều rộng(px):
-        <input id="widthInput" type="number" style="width:80px;padding:4px;border:1px solid #bbb;border-radius:5px;text-align:right;" value="560">
+        <input id="widthInput" type="number" style="width:80px;padding:4px;border:1px solid #bbb;border-radius:5px;text-align:right;" value="64 0">
       </label>
       <label>Chiều cao(px):
         <input id="heightInput" type="number" style="width:80px;padding:4px;border:1px solid #bbb;border-radius:5px;text-align:right;" value="340">
@@ -177,12 +180,13 @@ box.style.cssText = `
         const tbody = document.getElementById("mini-excel-body");
 
         json.forEach(row => {
-          const [yeuCau, chiTiet, doiTac] = row;
+          const [yeuCau, chiTiet, doiTac, group] = row;
           const tr = document.createElement("tr");
           tr.innerHTML = `
             <td style="border:1px solid #ccc;padding:4px;"><input value="${yeuCau||''}"></td>
             <td style="border:1px solid #ccc;padding:4px;"><input value="${chiTiet||''}"></td>
             <td style="border:1px solid #ccc;padding:4px;"><input value="${doiTac||''}"></td>
+            <td style="border:1px solid #ccc;padding:4px;"><input value="${group ||''}"></td>
             <td style="border:1px solid #ccc;text-align:center;"><button class="doAction" style="padding:4px 8px;border-radius:4px;border:1px solid #4285f4;background:#4285f4;color:#fff;cursor:pointer;">▶</button></td>
             <td style="border:1px solid #ccc;text-align:center;"><button class="deleteRow" style="padding:4px 8px;border-radius:4px;border:1px solid #d33;background:#d33;color:#fff;cursor:pointer;">🗑️</button></td>
           `;
@@ -279,6 +283,7 @@ box.style.cssText = `
       <td style="border:1px solid #ccc;padding:4px;"><input placeholder=""></td>
       <td style="border:1px solid #ccc;padding:4px;"><input placeholder=""></td>
       <td style="border:1px solid #ccc;padding:4px;"><input placeholder=""></td>
+      <td style="border:1px solid #ccc;padding:4px;"><input placeholder=""></td>
       <td style="border:1px solid #ccc;text-align:center;"><button class="doAction" style="padding:4px 8px;border-radius:4px;border:1px solid #4285f4;background:#4285f4;color:#fff;cursor:pointer;">▶</button></td>
       <td style="border:1px solid #ccc;text-align:center;"><button class="deleteRow" style="padding:4px 8px;border-radius:4px;border:1px solid #d33;background:#d33;color:#fff;cursor:pointer;">🗑️</button></td>
     `;
@@ -323,6 +328,7 @@ box.addEventListener("click", async e => {
     const yeuCau  = tr.children[0].querySelector("input").value.trim();
     const chiTiet = tr.children[1].querySelector("input").value.trim();
     const doiTac  = tr.children[2].querySelector("input").value.trim();
+    const group   = tr.children[3].querySelector("input").value.trim();
     const subjVal = document.getElementById("subjectInput").value.trim() || "PhuongNt32";
 
     const waitForLabel = async (labelText, timeout = 5000) => {
@@ -341,6 +347,7 @@ box.addEventListener("click", async e => {
     await waitForLabel("Yêu cầu");
     await waitForLabel("Chi tiết vấn đề");
     await waitForLabel("Đối tác");
+    await waitForLabel("Group");
 
     const subj = document.querySelector("#Subject");
     if(subj){
@@ -351,6 +358,7 @@ box.addEventListener("click", async e => {
     await selectDropdownChooseFirst("Yêu cầu", yeuCau);
     await selectDropdownChooseFirst("Chi tiết vấn đề", chiTiet);
     await selectDropdownChooseFirst("Đối tác", doiTac);
+    await selectDropdownChooseFirst("Group", group);
 
   } finally {
     // 💡 Đặt ở đây đảm bảo chỉ clear sau khi xong (kể cả có lỗi vẫn chạy)
@@ -375,6 +383,7 @@ box.addEventListener("click", async e => {
     <td style="border:1px solid #ccc;padding:4px;"><input value="Thanh toán"></td>
     <td style="border:1px solid #ccc;padding:4px;"><input value="Kiểm tra giao dịch"></td>
     <td style="border:1px solid #ccc;padding:4px;"><input value="None"></td>
+    <td style="border:1px solid #ccc;padding:4px;"><input value="Fanpage"></td>
     <td style="border:1px solid #ccc;text-align:center;"><button class="doAction" style="padding:4px 8px;border-radius:4px;border:1px solid #4285f4;background:#4285f4;color:#fff;cursor:pointer;">▶</button></td>
     <td style="border:1px solid #ccc;text-align:center;"><button class="deleteRow" style="padding:4px 8px;border-radius:4px;border:1px solid #d33;background:#d33;color:#fff;cursor:pointer;">🗑️</button></td>
   `;
