@@ -1,58 +1,73 @@
-(function(){
+(function() {
 
-  // ==========================
-  // HÀM HỖ TRỢ
-  // ==========================
-  const sleep = ms => new Promise(r => setTimeout(r, ms));
-  const getDelay = () => {
-    const el = document.getElementById("delayInput");
-    return Math.max(50, parseInt(el?.value || "200",10));
-  };
+    // ==========================
+    // HÀM HỖ TRỢ
+    // ==========================
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    const getDelay = () => {
+        const el = document.getElementById("delayInput");
+        return Math.max(50, parseInt(el?.value || "200", 10));
+    };
 
-  async function selectDropdownChooseFirst(labelText, optionText) {
-    const label = [...document.querySelectorAll(".fd-ticket-col label")]
-                    .find(l => l.innerText.trim().startsWith(labelText));
-    if (!label) { console.warn("❗Không tìm thấy label", labelText); return false; }
-    const col = label.closest(".fd-ticket-col");
-    const trigger = col.querySelector(".ember-basic-dropdown-trigger");
-    if (!trigger) { console.warn("❗Không tìm thấy trigger cho", labelText); return false; }
+    async function selectDropdownChooseFirst(labelText, optionText) {
+        const label = [...document.querySelectorAll(".fd-ticket-col label")]
+            .find(l => l.innerText.trim().startsWith(labelText));
+        if (!label) {
+            console.warn("❗Không tìm thấy label", labelText);
+            return false;
+        }
+        const col = label.closest(".fd-ticket-col");
+        const trigger = col.querySelector(".ember-basic-dropdown-trigger");
+        if (!trigger) {
+            console.warn("❗Không tìm thấy trigger cho", labelText);
+            return false;
+        }
 
-    ["mousedown","mouseup","click"].forEach(evt =>
-      trigger.dispatchEvent(new MouseEvent(evt,{bubbles:true}))
-    );
+        ["mousedown", "mouseup", "click"].forEach(evt =>
+            trigger.dispatchEvent(new MouseEvent(evt, {
+                bubbles: true
+            }))
+        );
 
-    await sleep(getDelay());
+        await sleep(getDelay());
 
-    const searchInput = document.querySelector(".ember-power-select-search-input");
-    if (!searchInput) { console.warn("⚠️ Không tìm thấy ô search cho", labelText); return false; }
+        const searchInput = document.querySelector(".ember-power-select-search-input");
+        if (!searchInput) {
+            console.warn("⚠️ Không tìm thấy ô search cho", labelText);
+            return false;
+        }
 
-    searchInput.focus();
-    searchInput.value = optionText || "";
-    searchInput.dispatchEvent(new Event("input",{bubbles:true}));
+        searchInput.focus();
+        searchInput.value = optionText || "";
+        searchInput.dispatchEvent(new Event("input", {
+            bubbles: true
+        }));
 
-    await sleep(getDelay());
+        await sleep(getDelay());
 
-    const opt = document.querySelector(".ember-power-select-option");
-    if (!opt) {
-      console.warn(`❗Không tìm thấy option cho "${labelText}"`);
-      return false;
+        const opt = document.querySelector(".ember-power-select-option");
+        if (!opt) {
+            console.warn(`❗Không tìm thấy option cho "${labelText}"`);
+            return false;
+        }
+
+        ["mousedown", "mouseup", "click"].forEach(evt =>
+            opt.dispatchEvent(new MouseEvent(evt, {
+                bubbles: true
+            }))
+        );
+        return true;
     }
 
-    ["mousedown","mouseup","click"].forEach(evt =>
-      opt.dispatchEvent(new MouseEvent(evt,{bubbles:true}))
-    );
-    return true;
-  }
+    // ==========================
+    // TẠO MINI-EXCEL (1 BẢNG)
+    // ==========================
+    const OLD = document.getElementById("mini-excel-tool");
+    if (OLD) OLD.remove();
 
-  // ==========================
-  // TẠO MINI-EXCEL (1 BẢNG)
-  // ==========================
-  const OLD = document.getElementById("mini-excel-tool");
-  if (OLD) OLD.remove();
-
-  const box = document.createElement("div");
-  box.id = "mini-excel-tool";
-box.style.cssText = `
+    const box = document.createElement("div");
+    box.id = "mini-excel-tool";
+    box.style.cssText = `
     position:fixed;
     top:40px; left:40px;
     z-index:99999;
@@ -74,7 +89,7 @@ box.style.cssText = `
 `;
 
 
-  box.innerHTML = `
+    box.innerHTML = `
     <style>
       #mini-excel-table, #mini-excel-table th, #mini-excel-table td, #mini-excel-table input { box-sizing: border-box; }
       #mini-excel-table thead th { position: sticky; top: 0; background: #4285f4; color: #fff; z-index: 10; }
@@ -88,6 +103,7 @@ box.style.cssText = `
         <button id="importExcelBtn" style="margin-right:6px;padding:2px 8px;border-radius:5px;border:1px solid #999;background:#eee;cursor:pointer;">Import Excel</button>
         <button id="toggleViewBtn" style="margin-right:6px;padding:2px 8px;border-radius:5px;border:1px solid #999;background:#eee;cursor:pointer;display:none;">Ẩn (Ctrl + X)</button>
         <button id="resetTableBtn" style="margin-right:6px;padding:2px 8px;border-radius:5px;border:1px solid #999;background:#eee;cursor:pointer;">Reset Table</button>
+        <button id="Resolve" style="margin-right:6px;padding:2px 8px;border-radius:5px;border:1px solid #999;background:#eee;cursor:pointer;">Resolve</button>
         <button id="closeMiniExcel" style="background:transparent;border:none;font-size:18px;cursor:pointer;">✖</button>
       </div>
     </div>
@@ -144,45 +160,49 @@ box.style.cssText = `
     </div>
   `;
 
-  document.body.appendChild(box);
-  // ==========================
-  // IMPORT EXCEL XLSX
-  // ==========================
-  const excelInput = document.createElement("input");
-  excelInput.type = "file";
-  excelInput.accept = ".xlsx,.xls";
-  excelInput.style.display = "none";
-  document.body.appendChild(excelInput);
+    document.body.appendChild(box);
+    // ==========================
+    // IMPORT EXCEL XLSX
+    // ==========================
+    const excelInput = document.createElement("input");
+    excelInput.type = "file";
+    excelInput.accept = ".xlsx,.xls";
+    excelInput.style.display = "none";
+    document.body.appendChild(excelInput);
 
-  document.getElementById("importExcelBtn").onclick = () => excelInput.click();
+    document.getElementById("importExcelBtn").onclick = () => excelInput.click();
 
-  excelInput.onchange = async e => {
-    const file = e.target.files[0];
-    if(!file) return;
+    excelInput.onchange = async e => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-    // Load SheetJS library nếu chưa có
-    if (!window.XLSX) {
-      const script = document.createElement("script");
-      script.src = "https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js";
-      script.onload = () => processExcel(file);
-      document.head.appendChild(script);
-    } else {
-      processExcel(file);
-    }
+        // Load SheetJS library nếu chưa có
+        if (!window.XLSX) {
+            const script = document.createElement("script");
+            script.src = "https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js";
+            script.onload = () => processExcel(file);
+            document.head.appendChild(script);
+        } else {
+            processExcel(file);
+        }
 
-    function processExcel(file) {
-      const reader = new FileReader();
-      reader.onload = evt => {
-        const data = new Uint8Array(evt.target.result);
-        const workbook = XLSX.read(data, {type: "array"});
-        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-        const json = XLSX.utils.sheet_to_json(firstSheet, {header:1});
-        const tbody = document.getElementById("mini-excel-body");
+        function processExcel(file) {
+            const reader = new FileReader();
+            reader.onload = evt => {
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, {
+                    type: "array"
+                });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const json = XLSX.utils.sheet_to_json(firstSheet, {
+                    header: 1
+                });
+                const tbody = document.getElementById("mini-excel-body");
 
-        json.forEach(row => {
-          const [yeuCau, chiTiet, doiTac, group] = row;
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
+                json.forEach(row => {
+                    const [yeuCau, chiTiet, doiTac, group] = row;
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
             <td style="border:1px solid #ccc;padding:4px;"><input value="${yeuCau||''}"></td>
             <td style="border:1px solid #ccc;padding:4px;"><input value="${chiTiet||''}"></td>
             <td style="border:1px solid #ccc;padding:4px;"><input value="${doiTac||''}"></td>
@@ -190,96 +210,99 @@ box.style.cssText = `
             <td style="border:1px solid #ccc;text-align:center;"><button class="doAction" style="padding:4px 8px;border-radius:4px;border:1px solid #4285f4;background:#4285f4;color:#fff;cursor:pointer;">▶</button></td>
             <td style="border:1px solid #ccc;text-align:center;"><button class="deleteRow" style="padding:4px 8px;border-radius:4px;border:1px solid #d33;background:#d33;color:#fff;cursor:pointer;">🗑️</button></td>
           `;
-          tbody.appendChild(tr);
-        });
+                    tbody.appendChild(tr);
+                });
+                updateTbodyHeight();
+            };
+            reader.readAsArrayBuffer(file);
+        }
+    };
+
+
+    // ==========================
+    // KÍCH THƯỚC BOX
+    // ==========================
+    const widthInput = document.getElementById("widthInput");
+    const heightInput = document.getElementById("heightInput");
+
+    function updateBoxSize() {
+        box.style.width = widthInput.value + "px";
+        box.style.height = heightInput.value + "px";
+        setTimeout(updateTbodyHeight, 30);
+    }
+
+    widthInput.addEventListener("input", updateBoxSize);
+    heightInput.addEventListener("input", updateBoxSize);
+
+    new ResizeObserver(() => {
+        widthInput.value = box.offsetWidth;
+        heightInput.value = box.offsetHeight;
         updateTbodyHeight();
-      };
-      reader.readAsArrayBuffer(file);
+    }).observe(box);
+
+    // ==========================
+    // GIỚI HẠN 8 DÒNG (1 TABLE + sticky header)
+    // ==========================
+    const maxVisibleRows = 8;
+    const scrollContainer = document.getElementById("mini-excel-scroll");
+    const table = document.getElementById("mini-excel-table");
+    const miniBody = document.getElementById("mini-excel-body");
+
+    function updateTbodyHeight() {
+        const rows = miniBody.querySelectorAll("tr");
+        const rowCount = rows.length;
+        if (rowCount === 0) {
+            scrollContainer.style.maxHeight = "0px";
+            return;
+        }
+
+        // đo chiều cao header và 1 hàng thực tế
+        const header = table.querySelector("thead");
+        const headerRect = header.getBoundingClientRect();
+        const headerH = headerRect.height || 0;
+
+        // chọn 1 hàng làm chuẩn (nếu bạn có hàng cao hơn do wrap text, có thể lấy max của vài hàng)
+        const firstRowRect = rows[0].getBoundingClientRect();
+        const rowH = Math.max(24, firstRowRect.height); // fallback min 24
+
+        const visibleRows = Math.min(rowCount, maxVisibleRows);
+        // tổng chiều cao = header + visibleRows * rowH
+        const totalH = Math.round(headerH + visibleRows * rowH);
+
+        scrollContainer.style.maxHeight = totalH + "px";
+        scrollContainer.style.overflowY = rowCount > maxVisibleRows ? "auto" : "hidden";
     }
-  };
 
-  
-  // ==========================
-  // KÍCH THƯỚC BOX
-  // ==========================
-  const widthInput = document.getElementById("widthInput");
-  const heightInput = document.getElementById("heightInput");
-
-  function updateBoxSize() {
-    box.style.width = widthInput.value + "px";
-    box.style.height = heightInput.value + "px";
-    setTimeout(updateTbodyHeight, 30);
-  }
-
-  widthInput.addEventListener("input", updateBoxSize);
-  heightInput.addEventListener("input", updateBoxSize);
-
-  new ResizeObserver(() => {
-    widthInput.value = box.offsetWidth;
-    heightInput.value = box.offsetHeight;
+    // observer thay đổi số lượng hàng
+    const observer = new MutationObserver(updateTbodyHeight);
+    observer.observe(miniBody, {
+        childList: true,
+        subtree: false
+    });
+    window.addEventListener("resize", updateTbodyHeight);
     updateTbodyHeight();
-  }).observe(box);
 
-  // ==========================
-  // GIỚI HẠN 8 DÒNG (1 TABLE + sticky header)
-  // ==========================
-  const maxVisibleRows = 8;
-  const scrollContainer = document.getElementById("mini-excel-scroll");
-  const table = document.getElementById("mini-excel-table");
-  const miniBody = document.getElementById("mini-excel-body");
+    // ==========================
+    // EVENTS: add/delete/click
+    // ==========================
+    document.getElementById("closeMiniExcel").onclick = () => box.remove();
 
-  function updateTbodyHeight() {
-    const rows = miniBody.querySelectorAll("tr");
-    const rowCount = rows.length;
-    if (rowCount === 0) {
-      scrollContainer.style.maxHeight = "0px";
-      return;
-    }
+    const toggleBtn = document.getElementById("toggleViewBtn");
+    let hiddenState = false;
+    toggleBtn.onclick = () => {
+        hiddenState = !hiddenState;
+        document.querySelector("#mini-excel-table").style.display = hiddenState ? "none" : "";
+        document.getElementById("addRowBtn").style.display = hiddenState ? "none" : "";
+        document.getElementById("delayInput").parentElement.style.display = hiddenState ? "none" : "";
+        document.getElementById("subjectInput").parentElement.style.display = hiddenState ? "none" : "";
+        widthInput.parentElement.style.display = hiddenState ? "none" : "";
+        heightInput.parentElement.style.display = hiddenState ? "none" : "";
+        toggleBtn.innerText = hiddenState ? "Hiện" : "Ẩn";
+    };
 
-    // đo chiều cao header và 1 hàng thực tế
-    const header = table.querySelector("thead");
-    const headerRect = header.getBoundingClientRect();
-    const headerH = headerRect.height || 0;
-
-    // chọn 1 hàng làm chuẩn (nếu bạn có hàng cao hơn do wrap text, có thể lấy max của vài hàng)
-    const firstRowRect = rows[0].getBoundingClientRect();
-    const rowH = Math.max(24, firstRowRect.height); // fallback min 24
-
-    const visibleRows = Math.min(rowCount, maxVisibleRows);
-    // tổng chiều cao = header + visibleRows * rowH
-    const totalH = Math.round(headerH + visibleRows * rowH);
-
-    scrollContainer.style.maxHeight = totalH + "px";
-    scrollContainer.style.overflowY = rowCount > maxVisibleRows ? "auto" : "hidden";
-  }
-
-  // observer thay đổi số lượng hàng
-  const observer = new MutationObserver(updateTbodyHeight);
-  observer.observe(miniBody, {childList:true, subtree:false});
-  window.addEventListener("resize", updateTbodyHeight);
-  updateTbodyHeight();
-
-  // ==========================
-  // EVENTS: add/delete/click
-  // ==========================
-  document.getElementById("closeMiniExcel").onclick = () => box.remove();
-
-  const toggleBtn = document.getElementById("toggleViewBtn");
-  let hiddenState = false;
-  toggleBtn.onclick = () => {
-    hiddenState = !hiddenState;
-    document.querySelector("#mini-excel-table").style.display = hiddenState ? "none" : "";
-    document.getElementById("addRowBtn").style.display = hiddenState ? "none" : "";
-    document.getElementById("delayInput").parentElement.style.display = hiddenState ? "none" : "";
-    document.getElementById("subjectInput").parentElement.style.display = hiddenState ? "none" : "";
-    widthInput.parentElement.style.display = hiddenState ? "none" : "";
-    heightInput.parentElement.style.display = hiddenState ? "none" : "";
-    toggleBtn.innerText = hiddenState ? "Hiện" : "Ẩn";
-  };
-
-  document.getElementById("addRowBtn").onclick = () => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
+    document.getElementById("addRowBtn").onclick = () => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
       <td style="border:1px solid #ccc;padding:4px;"><input placeholder=""></td>
       <td style="border:1px solid #ccc;padding:4px;"><input placeholder=""></td>
       <td style="border:1px solid #ccc;padding:4px;"><input placeholder=""></td>
@@ -287,99 +310,124 @@ box.style.cssText = `
       <td style="border:1px solid #ccc;text-align:center;"><button class="doAction" style="padding:4px 8px;border-radius:4px;border:1px solid #4285f4;background:#4285f4;color:#fff;cursor:pointer;">▶</button></td>
       <td style="border:1px solid #ccc;text-align:center;"><button class="deleteRow" style="padding:4px 8px;border-radius:4px;border:1px solid #d33;background:#d33;color:#fff;cursor:pointer;">🗑️</button></td>
     `;
-    miniBody.appendChild(tr);
-    updateTbodyHeight();
-  };
-
-box.addEventListener("click", async e => {
-  if (e.target.classList.contains("doAction")) {
-  try {
-    // ====== Đoạn 1: Click Resolve & Create Ticket In Freshdesk ======
-    await new Promise(resolve => {
-      const btn = document.querySelector('.split-button.resolve-action.custom-split-dropdown[role="button"]');
-      if (!btn) { alert('❌ Không tìm thấy nút dropdown Resolve'); resolve(); return; }
-
-      btn.click();
-
-      const simulateClick = (el) => ['mousedown','mouseup','click'].forEach(evt=>{
-        el.dispatchEvent(new MouseEvent(evt,{bubbles:true}));
-      });
-
-      const trySelect = () => {
-        const options = document.querySelectorAll('.ember-power-select-option');
-        for(const opt of options){
-          if(opt.innerText.replace(/\s+/g,' ').trim().toLowerCase() === 'resolve and create ticket in freshdesk'){
-            simulateClick(opt);
-            return true;
-          }
-        }
-        return false;
-      };
-
-      let tries=0;
-      const timer = setInterval(()=>{
-        tries++;
-        if(trySelect() || tries>50){ clearInterval(timer); resolve(); }
-      },200);
-    });
-
-    // ====== Đoạn 2: Chờ đủ label trước khi chọn dropdown ======
-    const tr = e.target.closest("tr");
-    const yeuCau  = tr.children[0].querySelector("input").value.trim();
-    const chiTiet = tr.children[1].querySelector("input").value.trim();
-    const doiTac  = tr.children[2].querySelector("input").value.trim();
-    const group   = tr.children[3].querySelector("input").value.trim();
-    const subjVal = document.getElementById("subjectInput").value.trim() || "PhuongNt32";
-
-    const waitForLabel = async (labelText, timeout = 5000) => {
-      const interval = 100;
-      let elapsed = 0;
-      while(elapsed < timeout){
-        const label = [...document.querySelectorAll(".fd-ticket-col label")]
-                        .find(l => l.innerText.trim().startsWith(labelText));
-        if(label) return label;
-        await new Promise(r=>setTimeout(r, interval));
-        elapsed += interval;
-      }
-      return null;
+        miniBody.appendChild(tr);
+        updateTbodyHeight();
     };
 
-    await waitForLabel("Yêu cầu");
-    await waitForLabel("Chi tiết vấn đề");
-    await waitForLabel("Đối tác");
-    await waitForLabel("Group");
+    box.addEventListener("click", async e => {
+        if (e.target.classList.contains("doAction")) {
+            try {
+                // ====== Đoạn 1: Click Resolve & Create Ticket In Freshdesk ======
+                await new Promise(resolve => {
+                    const btn = document.querySelector('.split-button.resolve-action.custom-split-dropdown[role="button"]');
+                    if (!btn) {
+                        alert('❌ Không tìm thấy nút dropdown Resolve');
+                        resolve();
+                        return;
+                    }
 
-    const subj = document.querySelector("#Subject");
-    if(subj){
-      subj.value = subjVal;
-      subj.dispatchEvent(new Event("input",{bubbles:true}));
-    }
+                    btn.click();
 
-    await selectDropdownChooseFirst("Yêu cầu", yeuCau);
-    await selectDropdownChooseFirst("Chi tiết vấn đề", chiTiet);
-    await selectDropdownChooseFirst("Đối tác", doiTac);
-    await selectDropdownChooseFirst("Group", group);
+                    const simulateClick = (el) => ['mousedown', 'mouseup', 'click'].forEach(evt => {
+                        el.dispatchEvent(new MouseEvent(evt, {
+                            bubbles: true
+                        }));
+                    });
 
-  } finally {
-    // 💡 Đặt ở đây đảm bảo chỉ clear sau khi xong (kể cả có lỗi vẫn chạy)
-    console.clear();
-  }
-}
+                    const trySelect = () => {
+                        const options = document.querySelectorAll('.ember-power-select-option');
+                        for (const opt of options) {
+                            if (opt.innerText.replace(/\s+/g, ' ').trim().toLowerCase() === 'resolve and create ticket in freshdesk') {
+                                simulateClick(opt);
+                                return true;
+                            }
+                        }
+                        return false;
+                    };
 
-  if(e.target.classList.contains("deleteRow")){
-    e.target.closest("tr").remove();
-    updateTbodyHeight();
-  }
-});
+                    let tries = 0;
+                    const timer = setInterval(() => {
+                        tries++;
+                        if (trySelect() || tries > 50) {
+                            clearInterval(timer);
+                            resolve();
+                        }
+                    }, 200);
+                });
+
+                // ====== Đoạn 2: Chờ đủ label trước khi chọn dropdown ======
+                const tr = e.target.closest("tr");
+                const yeuCau = tr.children[0].querySelector("input").value.trim();
+                const chiTiet = tr.children[1].querySelector("input").value.trim();
+                const doiTac = tr.children[2].querySelector("input").value.trim();
+                const group = tr.children[3].querySelector("input").value.trim();
+                const subjVal = document.getElementById("subjectInput").value.trim() || "PhuongNt32";
+
+                const waitForLabel = async (labelText, timeout = 5000) => {
+                    const interval = 100;
+                    let elapsed = 0;
+                    while (elapsed < timeout) {
+                        const label = [...document.querySelectorAll(".fd-ticket-col label")]
+                            .find(l => l.innerText.trim().startsWith(labelText));
+                        if (label) return label;
+                        await new Promise(r => setTimeout(r, interval));
+                        elapsed += interval;
+                    }
+                    return null;
+                };
+
+                await waitForLabel("Yêu cầu");
+                await waitForLabel("Chi tiết vấn đề");
+                await waitForLabel("Đối tác");
+                await waitForLabel("Group");
+
+                const subj = document.querySelector("#Subject");
+                if (subj) {
+                    subj.value = subjVal;
+                    subj.dispatchEvent(new Event("input", {
+                        bubbles: true
+                    }));
+                }
+
+                await selectDropdownChooseFirst("Yêu cầu", yeuCau);
+                await selectDropdownChooseFirst("Chi tiết vấn đề", chiTiet);
+                await selectDropdownChooseFirst("Đối tác", doiTac);
+                await selectDropdownChooseFirst("Group", group);
+
+            } finally {
+                // 💡 Đặt ở đây đảm bảo chỉ clear sau khi xong (kể cả có lỗi vẫn chạy)
+                console.clear();
+            }
+        }
+
+        if (e.target.classList.contains("deleteRow")) {
+            e.target.closest("tr").remove();
+            updateTbodyHeight();
+        }
+    });
+
+    // tránh gắn sự kiện nhiều lần
+    if (window.__resolveBound) return;
+    window.__resolveBound = true;
+
+    document.addEventListener("click", function(e) {
+        if (e.target.closest("#Resolve")) {
+            var realBtn = document.querySelector(".split-button-resolve");
+            if (realBtn) {
+                realBtn.click();
+                console.log("Custom Resolve clicked → Real Resolve triggered");
+            }
+        }
+    });
 
 
-  document.getElementById("resetTableBtn").onclick = () => {
-  const tbody = document.getElementById("mini-excel-body");
-  tbody.innerHTML = ""; // xóa tất cả row hiện tại
+    document.getElementById("resetTableBtn").onclick = () => {
+        const tbody = document.getElementById("mini-excel-body");
+        tbody.innerHTML = ""; // xóa tất cả row hiện tại
 
-  // Tạo lại 1 row mặc định nếu muốn
-  const tr = document.createElement("tr");
-  tr.innerHTML = `
+        // Tạo lại 1 row mặc định nếu muốn
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
     <td style="border:1px solid #ccc;padding:4px;"><input value="Thanh toán"></td>
     <td style="border:1px solid #ccc;padding:4px;"><input value="Kiểm tra giao dịch"></td>
     <td style="border:1px solid #ccc;padding:4px;"><input value="None"></td>
@@ -387,44 +435,48 @@ box.addEventListener("click", async e => {
     <td style="border:1px solid #ccc;text-align:center;"><button class="doAction" style="padding:4px 8px;border-radius:4px;border:1px solid #4285f4;background:#4285f4;color:#fff;cursor:pointer;">▶</button></td>
     <td style="border:1px solid #ccc;text-align:center;"><button class="deleteRow" style="padding:4px 8px;border-radius:4px;border:1px solid #d33;background:#d33;color:#fff;cursor:pointer;">🗑️</button></td>
   `;
-  tbody.appendChild(tr);
+        tbody.appendChild(tr);
 
-  updateTbodyHeight(); // cập nhật chiều cao scroll
-};
+        updateTbodyHeight(); // cập nhật chiều cao scroll
+    };
 
 
-  document.addEventListener("keydown", e => {
-    if (e.ctrlKey && e.key.toLowerCase() === "x") {
-      box.style.display = (box.style.display === "none" ? "block" : "none");
-    }
-  });
-(function enableDrag(el) {
-  let offsetX = 0, offsetY = 0, isDown = false, startX = 0, startY = 0;
+    document.addEventListener("keydown", e => {
+        if (e.ctrlKey && e.key.toLowerCase() === "x") {
+            box.style.display = (box.style.display === "none" ? "block" : "none");
+        }
+    });
+    (function enableDrag(el) {
+        let offsetX = 0,
+            offsetY = 0,
+            isDown = false,
+            startX = 0,
+            startY = 0;
 
-  const header = el.querySelector("div"); // header đầu tiên
-  header.style.cursor = "move";
+        const header = el.querySelector("div"); // header đầu tiên
+        header.style.cursor = "move";
 
-  header.addEventListener("mousedown", e => {
-    isDown = true;
-    startX = e.clientX;
-    startY = e.clientY;
-    const rect = el.getBoundingClientRect();
-    offsetX = rect.left;
-    offsetY = rect.top;
-    document.body.style.userSelect = "none";
-  });
+        header.addEventListener("mousedown", e => {
+            isDown = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            const rect = el.getBoundingClientRect();
+            offsetX = rect.left;
+            offsetY = rect.top;
+            document.body.style.userSelect = "none";
+        });
 
-  document.addEventListener("mouseup", () => {
-    isDown = false;
-    document.body.style.userSelect = "";
-  });
+        document.addEventListener("mouseup", () => {
+            isDown = false;
+            document.body.style.userSelect = "";
+        });
 
-  document.addEventListener("mousemove", e => {
-    if (!isDown) return;
-    const dx = e.clientX - startX;
-    const dy = e.clientY - startY;
-    el.style.transform = `translate(${offsetX + dx}px, ${offsetY + dy}px)`;
-  });
-})(box);
+        document.addEventListener("mousemove", e => {
+            if (!isDown) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            el.style.transform = `translate(${offsetX + dx}px, ${offsetY + dy}px)`;
+        });
+    })(box);
 
 })();
