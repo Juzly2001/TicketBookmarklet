@@ -145,16 +145,19 @@
 
     <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
       <button id="addRowBtn" style="padding:4px 12px;border-radius:5px;border:1px solid #28a745;background:#28a745;color:#fff;cursor:pointer;">+ Add row</button>
+      <label>Resolved:
+        <input id="resolved" type="number" value="0" style="width:80px;padding:4px;border:1px solid #bbb;border-radius:5px;text-align:right;" disabled>
+      </label>
       <label>Delay(ms):
         <input id="delayInput" type="number" min="50" value="0" style="width:80px;padding:4px;border:1px solid #bbb;border-radius:5px;text-align:right;">
       </label>
       <label>Subject:
         <input id="subjectInput" style="width:150px;padding:4px;border:1px solid #bbb;border-radius:5px;" value="PhuongNt32">
       </label>
-      <label>Chiều rộng(px):
+      <label>Width(px):
         <input id="widthInput" type="number" style="width:80px;padding:4px;border:1px solid #bbb;border-radius:5px;text-align:right;" value="64 0">
       </label>
-      <label>Chiều cao(px):
+      <label>Height(px):
         <input id="heightInput" type="number" style="width:80px;padding:4px;border:1px solid #bbb;border-radius:5px;text-align:right;" value="340">
       </label>
     </div>
@@ -406,7 +409,7 @@
         }
     });
 
-    // tránh gắn sự kiện nhiều lần
+    // tránh gắn sự kiện nhiều lần (Resolve)
     if (window.__resolveBound) return;
     window.__resolveBound = true;
 
@@ -418,6 +421,18 @@
                 console.log("Custom Resolve clicked → Real Resolve triggered");
             }
         }
+    });
+
+    // Resolved
+    const input = document.getElementById('resolved');
+    if(!input) return;
+
+    const btn = document.querySelector('button[aria-label="Resolve and create ticket"]');
+    if(!btn) return;
+
+    btn.addEventListener('click', function(){
+        const current = parseInt(input.value || '0', 10);
+        input.value = current + 1;
     });
 
 
