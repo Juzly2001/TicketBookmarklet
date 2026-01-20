@@ -146,7 +146,7 @@
     <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
       <button id="addRowBtn" style="padding:4px 12px;border-radius:5px;border:1px solid #28a745;background:#28a745;color:#fff;cursor:pointer;">+ Add row</button>
       <label>Resolved:
-        <input id="resolved" type="number" value="0" style="width:80px;padding:4px;border:1px solid #bbb;border-radius:5px;text-align:right;" disabled>
+        <input id="resolved" type="number" value="0" style="width:80px;padding:4px;border:1px solid #bbb;border-radius:5px;text-align:right;" readonly>
       </label>
       <label>Delay(ms):
         <input id="delayInput" type="number" min="50" value="0" style="width:80px;padding:4px;border:1px solid #bbb;border-radius:5px;text-align:right;">
@@ -409,7 +409,7 @@
         }
     });
 
-    // tránh gắn sự kiện nhiều lần (Resolve)
+    // tránh gắn sự kiện nhiều lần
     if (window.__resolveBound) return;
     window.__resolveBound = true;
 
@@ -425,15 +425,23 @@
 
     // Resolved
     const input = document.getElementById('resolved');
-    if(!input) return;
+    document.addEventListener(
+    'mousedown',
+    function (e) {
+        const btn = e.target.closest(
+        'button[aria-label="Resolve and create ticket"]'
+        );
+        if (!btn || !input) return;
 
-    const btn = document.querySelector('button[aria-label="Resolve and create ticket"]');
-    if(!btn) return;
+        // delay nhẹ để tránh Ember kill DOM
+        setTimeout(() => {
+        input.value = (+input.value || 0) + 1;
+        }, 0);
+    },
+    true // 🔥 capture phase (rất quan trọng)
+    );
 
-    btn.addEventListener('click', function(){
-        const current = parseInt(input.value || '0', 10);
-        input.value = current + 1;
-    });
+
 
 
     document.getElementById("resetTableBtn").onclick = () => {
@@ -443,8 +451,8 @@
         // Tạo lại 1 row mặc định nếu muốn
         const tr = document.createElement("tr");
         tr.innerHTML = `
-    <td style="border:1px solid #ccc;padding:4px;"><input value="Thanh toán"></td>
-    <td style="border:1px solid #ccc;padding:4px;"><input value="Kiểm tra giao dịch"></td>
+    <td style="border:1px solid #ccc;padding:4px;"><input value="Others"></td>
+    <td style="border:1px solid #ccc;padding:4px;"><input value="No support"></td>
     <td style="border:1px solid #ccc;padding:4px;"><input value="None"></td>
     <td style="border:1px solid #ccc;padding:4px;"><input value="Fanpage"></td>
     <td style="border:1px solid #ccc;text-align:center;"><button class="doAction" style="padding:4px 8px;border-radius:4px;border:1px solid #4285f4;background:#4285f4;color:#fff;cursor:pointer;">▶</button></td>
