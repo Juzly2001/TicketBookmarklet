@@ -78,7 +78,7 @@
     box-shadow:0 6px 18px rgba(0,0,0,0.2);
     font-family:Segoe UI, Arial, sans-serif;
     font-size:13px;
-    min-width:640px;
+    min-width:340px;
     min-height:340px;
     width:640px;     /* bắt buộc width */
     height:340px;    /* bắt buộc height */
