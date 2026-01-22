@@ -341,7 +341,7 @@ scheduleBtnEl.onclick = () => {
         clearInterval(scheduleCountdown);
         return;
       }
-      console.log("⏳ Auto sau", formatTime(remainingMs));
+      // console.log("⏳ Auto sau", formatTime(remainingMs));
     }, 1000);
 
     scheduleTimeout = setTimeout(runAutoNow, remainingMs);
