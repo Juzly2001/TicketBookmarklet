@@ -209,6 +209,48 @@
       });
       card.appendChild(delayInputEl);
       // === kết thúc thay đổi ===
+      // === 🕒 Schedule Auto (Time Picker) ===
+        const scheduleWrap = document.createElement("div");
+        scheduleWrap.style.display = "flex";
+        scheduleWrap.style.gap = "6px";
+        scheduleWrap.style.marginTop = "8px";
+
+        const timeInput = document.createElement("input");
+        timeInput.type = "time";
+        timeInput.id = "__autoReply_timeInput";
+        timeInput.step = 60;
+
+        const now = new Date();
+        timeInput.value =
+        String(now.getHours()).padStart(2, "0") +
+        ":" +
+        String(now.getMinutes()).padStart(2, "0");
+
+        Object.assign(timeInput.style, {
+        flex: "1",
+        padding: "8px",
+        borderRadius: "8px",
+        fontSize: "13px",
+        });
+
+        const scheduleBtn = document.createElement("button");
+        scheduleBtn.id = "__autoReply_scheduleBtn";
+        scheduleBtn.innerText = "⏰ Schedule";
+        Object.assign(scheduleBtn.style, {
+        padding: "8px 10px",
+        borderRadius: "8px",
+        fontSize: "13px",
+        border: "none",
+        background: "#ffc107",
+        cursor: "pointer",
+        whiteSpace: "nowrap",
+        });
+
+        scheduleWrap.appendChild(timeInput);
+        scheduleWrap.appendChild(scheduleBtn);
+        card.appendChild(scheduleWrap);
+
+
 
       // Giới hạn rep (giao diện giống auto submit)
           const limitToggle = document.createElement("button");
@@ -267,6 +309,108 @@
     const statusTextEl = document.getElementById("__autoReply_statusText");
     const limitToggleEl = document.getElementById("__autoReply_limitToggle");
     const limitInputEl = document.getElementById("__autoReply_limitInput");
+    // === ⏰ Schedule logic (Pause / Resume) ===
+const timeInputEl = document.getElementById("__autoReply_timeInput");
+const scheduleBtnEl = document.getElementById("__autoReply_scheduleBtn");
+
+let scheduleTimeout = null;
+let scheduleCountdown = null;
+let scheduledTarget = null;
+let schedulePaused = false;
+let remainingMs = 0;
+
+function formatTime(ms) {
+  const s = Math.max(0, Math.floor(ms / 1000));
+  const h = String(Math.floor(s / 3600)).padStart(2, "0");
+  const m = String(Math.floor((s % 3600) / 60)).padStart(2, "0");
+  const sec = String(s % 60).padStart(2, "0");
+  return `${h}:${m}:${sec}`;
+}
+
+scheduleBtnEl.onclick = () => {
+
+  // ▶️ RESUME
+  if (schedulePaused) {
+    scheduledTarget = new Date(Date.now() + remainingMs);
+    schedulePaused = false;
+    scheduleBtnEl.innerText = "⏸ Dừng hẹn";
+
+    scheduleCountdown = setInterval(() => {
+      remainingMs = scheduledTarget - Date.now();
+      if (remainingMs <= 0) {
+        clearInterval(scheduleCountdown);
+        return;
+      }
+      console.log("⏳ Auto sau", formatTime(remainingMs));
+    }, 1000);
+
+    scheduleTimeout = setTimeout(runAutoNow, remainingMs);
+    return;
+  }
+
+  // ⏸ PAUSE
+  if (scheduleTimeout && !schedulePaused) {
+    remainingMs = scheduledTarget - Date.now();
+    schedulePaused = true;
+
+    clearTimeout(scheduleTimeout);
+    clearInterval(scheduleCountdown);
+
+    scheduleBtnEl.innerText = "▶️ Run";
+    console.log("⏸ Đã dừng, còn", formatTime(remainingMs));
+    return;
+  }
+
+  // ⏰ CREATE NEW
+  if (!timeInputEl.value) {
+    alert("⛔ Chưa chọn giờ");
+    return;
+  }
+
+  if (autoMode) {
+    alert("⚠️ Auto đang chạy — hãy OFF trước");
+    return;
+  }
+
+const [h, m] = timeInputEl.value.split(":").map(Number);
+const now = new Date();
+const target = new Date();
+
+target.setHours(h, m, 0, 0);
+
+let diff = target - now;
+
+// chỉ sang ngày hôm sau nếu trễ hơn 60 giây
+if (diff < -60000) {
+  target.setDate(target.getDate() + 1);
+  diff = target - now;
+}
+
+// ⚡ nếu giờ đã tới → chạy ngay, KHÔNG tạo schedule
+if (diff < 1000) {
+  console.log("⚡ Đã tới giờ — Auto chạy ngay");
+  runAutoNow();
+  return;
+}
+
+remainingMs = diff;
+scheduledTarget = target;
+
+scheduleBtnEl.innerText = "⏸ Stop";
+
+scheduleCountdown = setInterval(() => {
+  remainingMs = scheduledTarget - Date.now();
+  if (remainingMs <= 0) {
+    clearInterval(scheduleCountdown);
+    return;
+  }
+  console.log("⏳ Auto sau", formatTime(remainingMs));
+}, 1000);
+
+scheduleTimeout = setTimeout(runAutoNow, remainingMs);
+
+};
+
 
     function updateCountUI() {
       if (countStatusEl) countStatusEl.innerText = `✅ Replied: ${formatLimitText()}`;
@@ -297,6 +441,7 @@
     let soundOn = false;
     let currentReview = null;
     let submitReadyChecker = null;
+
 
     // === NEW: fallback timer khi review không được lưu trong 30s ===
     let fallbackTimer = null;
@@ -387,6 +532,8 @@
     }
 
     const countedReviews = new WeakSet();
+
+    
 
     function waitForResponseUpdate(callback) {
       if (!currentReview) return;
@@ -606,6 +753,31 @@
         startProcessOnce();
       };
     }
+
+
+    function runAutoNow() {
+  scheduleTimeout = null;
+  scheduleCountdown = null;
+  schedulePaused = false;
+
+  scheduleBtnEl.innerText = "⏰ Schedule";
+
+  if (!autoMode) autoBtnEl.click();
+  if (!autoSubmitOn && typeof enableAutoSubmitProgrammatically === "function") {
+    enableAutoSubmitProgrammatically();
+  }
+
+
+  const delayInput = document.getElementById("__autoReply_delayInput");
+  if (delayInput) delayInput.style.display = "none";
+
+  playBeep();
+  console.log("🚀 Auto Reply đã kích hoạt");
+}
+
+
+
+
 
     function clickSubmitAction() {
       const submitBtn = [...document.querySelectorAll("button")].find(
