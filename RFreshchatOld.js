@@ -13,11 +13,6 @@ const rows=[
 // HÀM THÊM DÒNG
 // =========================
 function addRow(id, text){ rows.push({id, text}); } 
-function clearAllRows(){
-    rows.length = 0;
-    renderRows();
-}
-
 
 function createFragmentFromText(text){ 
     let t=String(text).replace(/<br\s*\/?>/gi,"\n").replace(/\r\n?/g,"\n"); 
@@ -115,7 +110,6 @@ searchContainer.style.borderRadius = "6px";
 searchContainer.style.padding = "0 8px"; // padding trên/dưới bằng 0
 searchContainer.style.height = "36px"; // cùng chiều cao với import
 searchContainer.style.background = "#fff";
-searchContainer.style.width = "100%";
 
 const searchInput = document.createElement("input");
 searchInput.placeholder = "Tìm theo ID...";
@@ -256,34 +250,7 @@ keyboardToggle.addEventListener("click", () => {
   keyboard.style.display = keyboard.style.display === "none" ? "block" : "none";
 });
 
-const gsInput = document.createElement("input");
-gsInput.type = "text";
-gsInput.placeholder = "Dán link Google Sheets...";
-gsInput.style.height = "36px";
-gsInput.style.padding = "0 10px";
-gsInput.style.border = "1px solid #ccc";
-gsInput.style.borderRadius = "6px";
-gsInput.style.outline = "none";
-gsInput.style.width = "100%";
-gsInput.style.marginRight = "8px";
-gsInput.style.fontSize = "13px";
-
-gsInput.addEventListener("input", (e) => {
-    const url = e.target.value.trim();
-
-    // 💾 lưu lại link
-    if (url) {
-        localStorage.setItem("GSHEET_LINK", url);
-    } else {
-        localStorage.removeItem("GSHEET_LINK");
-    }
-
-    importFromGoogleSheetByInput(url);
-});
-
-
-// thTools.appendChild(importLabel);
-thTools.appendChild(gsInput);
+thTools.appendChild(importLabel);
 thTools.appendChild(searchContainer);
 thTools.appendChild(keyboard);
 
@@ -361,16 +328,7 @@ addShortcutBtn.style.cursor = "pointer";
 addShortcutBtn.title = "Tạo/Import Key";
 searchContainer.appendChild(addShortcutBtn); // đưa vào cạnh input
 
-const shortcuts = [ 
-    "HT",
-    "KT",
-    "LH",
-    "CC",
-    "TK",
-    "GD",
-    "KM",
-    "PAY"
-];
+const shortcuts = [];
 const shortcutList = document.createElement("div");
 shortcutList.style.display = "flex";
 shortcutList.style.flexWrap = "wrap";
@@ -632,8 +590,7 @@ function renderRows(){
         tr.appendChild(td1); 
 
         const td2=document.createElement("td"); 
-        td2.textContent = r.text;
-        td2.style.whiteSpace = "pre-wrap";
+        td2.textContent = String(r.text).split("\n")[0];
         td2.style.padding="6px 8px"; 
         td2.style.whiteSpace="nowrap"; 
         td2.style.overflow="hidden"; 
@@ -747,60 +704,6 @@ importInput.addEventListener("change",async e=>{
     }else parseExcel(data); 
 }); 
 
-let gsImportTimer = null;
-
-async function importFromGoogleSheetByInput(url){
-    clearTimeout(gsImportTimer);
-
-    gsImportTimer = setTimeout(async () => {
-
-        if (!url || !url.trim()) {
-            clearAllRows();
-            return;
-        }
-
-        const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
-        if (!match) {
-            clearAllRows();
-            return;
-        }
-
-        const sheetId = match[1];
-        const jsonUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
-
-        try {
-            const res = await fetch(jsonUrl);
-            if (!res.ok) throw new Error("fetch fail");
-
-            const text = await res.text();
-
-            // 🔥 parse JSON đúng chuẩn gviz
-            const json = JSON.parse(
-                text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1)
-            );
-
-            clearAllRows();
-
-            json.table.rows.forEach(r => {
-                const id = r.c[0]?.v?.toString().trim();
-                const value = r.c[1]?.v?.toString() || "";
-
-                if (!id || !value) return;
-                if (id.toLowerCase() === "id") return;
-
-                addRow(id, value);
-            });
-
-            renderRows();
-
-        } catch (e) {
-            console.error(e);
-            clearAllRows();
-        }
-    }, 600);
-}
-
-
 function parseExcel(data){ 
     const wb=XLSX.read(data,{type:"array"}); 
     const sheet=wb.Sheets[wb.SheetNames[0]]; 
@@ -819,16 +722,6 @@ function parseExcel(data){
 tableWrapper.appendChild(table); 
 container.appendChild(tableWrapper); 
 document.body.appendChild(container); 
-// 🔁 Auto load Google Sheets khi reload trang
-const savedSheet = localStorage.getItem("GSHEET_LINK");
-if (savedSheet) {
-    gsInput.value = savedSheet;
-
-    // giả lập người dùng nhập
-    gsInput.dispatchEvent(new Event("input"));
-}
-
-
 
 // Cho phép kéo thả container
 let isDragging = false;

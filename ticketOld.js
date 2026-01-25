@@ -78,7 +78,7 @@
     box-shadow:0 6px 18px rgba(0,0,0,0.2);
     font-family:Segoe UI, Arial, sans-serif;
     font-size:13px;
-    min-width:400px;
+    min-width:340px;
     min-height:340px;
     width:640px;     /* bắt buộc width */
     height:340px;    /* bắt buộc height */
@@ -96,24 +96,17 @@
       #mini-excel-table td input { width: 100%; border: 1px solid #bbb; padding: 4px; border-radius: 4px; background: #fff; }
       #mini-excel-scroll { width: 100%; overflow-y: auto; }
     </style>
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
       <strong style="font-size:15px;">⚡ Ticket Tool ~ Hide/Show (Ctrl + X)</strong>
-       <div>
-        <button id="importExcelBtn" style="margin-right:6px;padding:2px 8px;border-radius:5px;border:1px solid #999;background:#eee;cursor:pointer;display:none;">Import Excel</button>
+      <div>
+        <button id="importExcelBtn" style="margin-right:6px;padding:2px 8px;border-radius:5px;border:1px solid #999;background:#eee;cursor:pointer;">Import Excel</button>
         <button id="toggleViewBtn" style="margin-right:6px;padding:2px 8px;border-radius:5px;border:1px solid #999;background:#eee;cursor:pointer;display:none;">Ẩn (Ctrl + X)</button>
-        <button id="resetTableBtn" style="margin-right:6px;padding:2px 8px;border-radius:5px;border:1px solid #999;background:#eee;cursor:pointer;display:none;">Reset Table</button>
+        <button id="resetTableBtn" style="margin-right:6px;padding:2px 8px;border-radius:5px;border:1px solid #999;background:#eee;cursor:pointer;">Reset Table</button>
         <button id="Resolve" style="margin-right:6px;padding:2px 8px;border-radius:5px;border:1px solid #999;background:#eee;cursor:pointer;">Resolve</button>
         <button id="closeMiniExcel" style="background:transparent;border:none;font-size:18px;cursor:pointer;">✖</button>
       </div>
-</div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <input
-            id="sheetLinkInput"
-            placeholder="🔗 Dán link Google Sheets (public)"
-            style="width:100%;padding:4px 6px;border:1px solid #bbb;border-radius:5px;font-size:12px;"
-        >
     </div>
-    
 
     <div style="border:1px solid #ccc;border-radius:6px;overflow:hidden;">
       <div id="mini-excel-scroll">
@@ -227,92 +220,6 @@
             reader.readAsArrayBuffer(file);
         }
     };
-
-    // ==========================
-    // IMPORT GOOGLE SHEETS (LINK)
-    // ==========================
-    const sheetInput = document.getElementById("sheetLinkInput");
-    const SHEET_KEY = "__mini_excel_sheet_link__";
-
-    // load lại link cũ nếu có
-    const savedLink = localStorage.getItem(SHEET_KEY);
-    if (savedLink) {
-        sheetInput.value = savedLink;
-        loadGoogleSheet(savedLink);
-    }
-
-    let sheetTimer = null;
-    sheetInput.addEventListener("input", () => {
-        clearTimeout(sheetTimer);
-        sheetTimer = setTimeout(() => {
-            const url = sheetInput.value.trim();
-
-            // 🔥 TRƯỜNG HỢP XÓA LINK
-            if (!url) {
-                localStorage.removeItem(SHEET_KEY);
-                document.getElementById("mini-excel-body").innerHTML = "";
-                updateTbodyHeight();
-                return;
-            }
-
-            // 🔥 CÓ LINK → LOAD
-            localStorage.setItem(SHEET_KEY, url);
-            loadGoogleSheet(url);
-
-        }, 600);
-    });
-
-
-    async function loadGoogleSheet(url) {
-        try {
-            const match = url.match(/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
-            if (!match) throw "Invalid sheet link";
-
-            const sheetId = match[1];
-            const gidMatch = url.match(/gid=(\d+)/);
-            const gid = gidMatch ? gidMatch[1] : "0";
-
-            const jsonUrl =
-                `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?gid=${gid}&tqx=out:json`;
-
-            const res = await fetch(jsonUrl);
-            const text = await res.text();
-
-            const json = JSON.parse(
-                text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1)
-            );
-
-            const rows = json.table.rows;
-            const tbody = document.getElementById("mini-excel-body");
-
-            tbody.innerHTML = ""; // clear cũ
-
-            rows.forEach(r => {
-                if (!r.c || r.c.length < 4) return;
-
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-<td style="border:1px solid #ccc;padding:4px;"><input value="${r.c[0]?.v || ''}"></td>
-<td style="border:1px solid #ccc;padding:4px;"><input value="${r.c[1]?.v || ''}"></td>
-<td style="border:1px solid #ccc;padding:4px;"><input value="${r.c[2]?.v || ''}"></td>
-<td style="border:1px solid #ccc;padding:4px;"><input value="${r.c[3]?.v || ''}"></td>
-<td style="border:1px solid #ccc;text-align:center;">
-  <button class="doAction" style="padding:4px 8px;border-radius:4px;border:1px solid #4285f4;background:#4285f4;color:#fff;">▶</button>
-</td>
-<td style="border:1px solid #ccc;text-align:center;">
-  <button class="deleteRow" style="padding:4px 8px;border-radius:4px;border:1px solid #d33;background:#d33;color:#fff;">🗑️</button>
-</td>`;
-                tbody.appendChild(tr);
-            });
-
-            updateTbodyHeight();
-
-        } catch (e) {
-            console.error(e);
-            alert("❌ Không load được Google Sheet (link sai hoặc chưa public)");
-        }
-    }
-
 
 
     // ==========================
@@ -519,19 +426,19 @@
     // Resolved
     const input = document.getElementById('resolved');
     document.addEventListener(
-        'mousedown',
-        function(e) {
-            const btn = e.target.closest(
-                'button[aria-label="Resolve and create ticket"]'
-            );
-            if (!btn || !input) return;
+    'mousedown',
+    function (e) {
+        const btn = e.target.closest(
+        'button[aria-label="Resolve and create ticket"]'
+        );
+        if (!btn || !input) return;
 
-            // delay nhẹ để tránh Ember kill DOM
-            setTimeout(() => {
-                input.value = (+input.value || 0) + 1;
-            }, 0);
-        },
-        true // 🔥 capture phase (rất quan trọng)
+        // delay nhẹ để tránh Ember kill DOM
+        setTimeout(() => {
+        input.value = (+input.value || 0) + 1;
+        }, 0);
+    },
+    true // 🔥 capture phase (rất quan trọng)
     );
 
 
