@@ -144,7 +144,7 @@ clearBtn.style.height = "24px";
 clearBtn.style.border = "none";
 clearBtn.style.background = "transparent";
 clearBtn.style.cursor = "pointer";
-clearBtn.title = "Xóa nhanh";
+attachTooltip(clearBtn, "Xóa tìm kiếm");
 clearBtn.addEventListener("click", () => {
   searchInput.value = "";
   searchInput.dispatchEvent(new Event("input"));
@@ -165,7 +165,7 @@ keyboardToggle.style.height = "24px";
 keyboardToggle.style.border = "none";
 keyboardToggle.style.background = "transparent";
 keyboardToggle.style.cursor = "pointer";
-keyboardToggle.title = "Bật/Tắt bàn phím";
+attachTooltip(keyboardToggle, "Bật/Tắt phím ảo");
 
 searchContainer.appendChild(searchInput);
 searchContainer.appendChild(clearBtn);
@@ -258,7 +258,7 @@ keyboardToggle.addEventListener("click", () => {
 
 const gsInput = document.createElement("input");
 gsInput.type = "text";
-gsInput.placeholder = "Dán link Google Sheets...";
+gsInput.placeholder = "🔗 Dán link Google Sheets (public)";
 gsInput.style.height = "36px";
 gsInput.style.padding = "0 10px";
 gsInput.style.border = "1px solid #ccc";
@@ -358,7 +358,7 @@ addShortcutBtn.style.height = "24px";
 addShortcutBtn.style.border = "none";
 addShortcutBtn.style.background = "transparent";
 addShortcutBtn.style.cursor = "pointer";
-addShortcutBtn.title = "Tạo/Import Key";
+attachTooltip(addShortcutBtn, "Tạo / Import Key");
 searchContainer.appendChild(addShortcutBtn); // đưa vào cạnh input
 
 const shortcuts = [ 
@@ -391,7 +391,7 @@ function renderShortcuts() {
     btn.style.fontWeight = "500";
     btn.style.transition = "0.2s";
     btn.style.userSelect = "none";
-    btn.title = "Shift + Click để xóa";
+    attachTooltip(btn, "(Shift + Click) để xóa key");
 
     btn.onmouseenter = () => (btn.style.background = "#e9ecef");
     btn.onmouseleave = () => (btn.style.background = "#fff");
@@ -611,6 +611,49 @@ tooltip.style.maxHeight = "200px";
 tooltip.style.overflowY = "auto";
 
 document.body.appendChild(tooltip);
+
+// =========================
+// Hàm css tooltip
+// =========================
+function attachTooltip(el, text) {
+  // ❌ bỏ tooltip mặc định browser
+  el.removeAttribute("title");
+
+  el.addEventListener("mouseenter", () => {
+    clearTimeout(hideTooltipTimeout);
+
+    tooltip.textContent = text;
+
+    // Hiện trước để lấy offsetWidth đúng
+    tooltip.style.opacity = 1;
+
+    requestAnimationFrame(() => {
+      const rect = el.getBoundingClientRect();
+
+      // căn giữa tooltip theo element
+      let left =
+        rect.left + rect.width / 2 - tooltip.offsetWidth / 2;
+
+      let top =
+        rect.bottom + window.scrollY + 8;
+
+      // tránh tràn màn hình trái/phải
+      if (left < 8) left = 8;
+      if (left + tooltip.offsetWidth > window.innerWidth - 8) {
+        left = window.innerWidth - tooltip.offsetWidth - 8;
+      }
+
+      tooltip.style.left = left + "px";
+      tooltip.style.top = top + "px";
+    });
+  });
+
+  el.addEventListener("mouseleave", () => {
+    hideTooltipTimeout = setTimeout(() => {
+      tooltip.style.opacity = 0;
+    }, 150);
+  });
+}
 
 
 // =========================

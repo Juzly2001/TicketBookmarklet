@@ -1,7 +1,8 @@
 javascript:(function() {
     var scripts = [
         // Có thể thêm nhiều link
-        "https://cdn.jsdelivr.net/gh/Juzly2001/TicketBookmarklet@master/REEappstore.js",
+        "https://cdn.jsdelivr.net/gh/Juzly2001/TicketBookmarklet@master/RFreshchat.js",
+        "https://cdn.jsdelivr.net/gh/Juzly2001/TicketBookmarklet@master/ticket.js",
     ];
 
     scripts.forEach(function(url, index) {

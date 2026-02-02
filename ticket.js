@@ -78,7 +78,7 @@
     box-shadow:0 6px 18px rgba(0,0,0,0.2);
     font-family:Segoe UI, Arial, sans-serif;
     font-size:13px;
-    min-width:400px;
+    min-width:444px;
     min-height:340px;
     width:640px;     /* bắt buộc width */
     height:340px;    /* bắt buộc height */
@@ -95,14 +95,19 @@
       #mini-excel-table thead th { position: sticky; top: 0; background: #4285f4; color: #fff; z-index: 10; }
       #mini-excel-table td input { width: 100%; border: 1px solid #bbb; padding: 4px; border-radius: 4px; background: #fff; }
       #mini-excel-scroll { width: 100%; overflow-y: auto; }
+      #mini-excel-tool [data-tooltip] { position: relative; }
+      #mini-excel-tool [data-tooltip]::after { content: attr(data-tooltip);position: absolute;bottom: -150%;left: 10px;background: #111827;color: white;padding: 6px 10px;border-radius: 8px;font-size: 12px;opacity: 0;transition: 0.2s;pointer-events: none;white-space: nowrap;}
+      #mini-excel-tool [data-tooltip]:hover::after {opacity: 1;}
     </style>
+    
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <strong style="font-size:15px;">⚡ Ticket Tool ~ Hide/Show (Ctrl + X)</strong>
+      <strong data-tooltip="Hide/Show table (Ctrl + X)" style="font-size:15px;">⚡ Ticket Tool</strong>
        <div>
         <button id="importExcelBtn" style="margin-right:6px;padding:2px 8px;border-radius:5px;border:1px solid #999;background:#eee;cursor:pointer;display:none;">Import Excel</button>
         <button id="toggleViewBtn" style="margin-right:6px;padding:2px 8px;border-radius:5px;border:1px solid #999;background:#eee;cursor:pointer;display:none;">Ẩn (Ctrl + X)</button>
         <button id="resetTableBtn" style="margin-right:6px;padding:2px 8px;border-radius:5px;border:1px solid #999;background:#eee;cursor:pointer;display:none;">Reset Table</button>
-        <button id="Resolve" style="margin-right:6px;padding:2px 8px;border-radius:5px;border:1px solid #999;background:#eee;cursor:pointer;">Resolve</button>
+        <button id="Resolve" data-tooltip="Resolve (Ctrl + Q)" style="margin-right:6px;padding:2px 8px;border-radius:5px;border:1px solid #999;background:#eee;cursor:pointer;">Resolve</button>
+        <button id="ResolveAndCreateTicket" data-tooltip="Resolve & create ticket (Ctrl + Z)" style="margin-right:20px;padding:2px 8px;border-radius:5px;border:1px solid #999;background:#eee;cursor:pointer;">Resolve & create ticket</button>
         <button id="closeMiniExcel" style="background:transparent;border:none;font-size:18px;cursor:pointer;">✖</button>
       </div>
 </div>
@@ -162,7 +167,7 @@
         <input id="subjectInput" style="width:150px;padding:4px;border:1px solid #bbb;border-radius:5px;" value="PhuongNt32">
       </label>
       <label>Width(px):
-        <input id="widthInput" type="number" style="width:80px;padding:4px;border:1px solid #bbb;border-radius:5px;text-align:right;" value="64 0">
+        <input id="widthInput" type="number" style="width:80px;padding:4px;border:1px solid #bbb;border-radius:5px;text-align:right;" value="640">
       </label>
       <label>Height(px):
         <input id="heightInput" type="number" style="width:80px;padding:4px;border:1px solid #bbb;border-radius:5px;text-align:right;" value="340">
@@ -505,21 +510,30 @@
     // tránh gắn sự kiện nhiều lần
     if (window.__resolveBound) return;
     window.__resolveBound = true;
-
+    // nút resolve
     document.addEventListener("click", function(e) {
         if (e.target.closest("#Resolve")) {
             var realBtn = document.querySelector(".split-button-resolve");
             if (realBtn) {
                 realBtn.click();
-                console.log("Custom Resolve clicked → Real Resolve triggered");
             }
         }
     });
+    // nút Resolve & createTicket
+    document.getElementById("ResolveAndCreateTicket").addEventListener("click", () => {
+        const targetBtn = document.querySelector(
+            'button[aria-label="Resolve and create ticket"]'
+        );
 
-    // Resolved
+        if (targetBtn) {
+            targetBtn.click();
+        } 
+    });
+
+    // Resolved ĐẾM SỐ
     const input = document.getElementById('resolved');
     document.addEventListener(
-        'mousedown',
+        'click',
         function(e) {
             const btn = e.target.closest(
                 'button[aria-label="Resolve and create ticket"]'
@@ -556,12 +570,37 @@
         updateTbodyHeight(); // cập nhật chiều cao scroll
     };
 
-
+    // phím tắt
     document.addEventListener("keydown", e => {
+        // Check Ctrl + X
         if (e.ctrlKey && e.key.toLowerCase() === "x") {
             box.style.display = (box.style.display === "none" ? "block" : "none");
         }
+        // Check Ctrl + Q
+        if (e.ctrlKey && e.key.toLowerCase() === "q") {
+            const resolveBtn = document.getElementById("Resolve");
+            if (resolveBtn) {
+                e.preventDefault(); // chặn browser
+                resolveBtn.click();
+            }
+        }
+        
     });
+    // Check Ctrl + Z
+    document.addEventListener(
+    "keydown",
+    (e) => {
+        if (e.ctrlKey && e.key.toLowerCase() === "z") {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+
+        document.getElementById("ResolveAndCreateTicket")?.click();
+        }
+    },
+    true // 🔥 capture phase: bắt trước tất cả
+    );
+
     (function enableDrag(el) {
         let offsetX = 0,
             offsetY = 0,
